@@ -1,0 +1,48 @@
+{
+  "expo": {
+    "name": "lokalsonline",
+    "slug": "lokalsonline",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#000000"
+    },
+    "scheme": "lokalsonline",
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.ersanceylan.lokalsonline"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#000000"
+      },
+      "package": "com.ersanceylan.lokalsonline"
+    },
+    "web": {
+      "output": "single",
+      "backgroundColor": "#000000",
+      "favicon": "./assets/favicon.png",
+      "splash": {
+        "image": "./assets/splash.png",
+        "resizeMode": "contain",
+        "backgroundColor": "#000000"
+      }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "238b1104-ad1c-492d-95c1-8ccc4ec8b142"
+      }
+    },
+    "experiments": {
+      "tsconfigPaths": true
+    }
+  }
+}

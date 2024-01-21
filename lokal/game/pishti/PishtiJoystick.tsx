@@ -1,0 +1,98 @@
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { useState } from "react";
+import { usePlayer } from "../../player/CurrentPlayer";
+import { usePishtiSession } from "./PishtiSessionProvider";
+import { Pressable, View } from "react-native";
+import { Nipple, joystickStyles } from "../backgammon/BackgammonJoyStick";
+import { LokalModal, LokalText } from "../../common/LokalCommons";
+import { LOKAL_COLORS } from "../../common/LokalConstants";
+import { pishtiApi } from "../../chirak/chirakApi/game/pishtiApi";
+import { useNavigation } from "@react-navigation/native";
+import { usePishti } from "./PishtiProvider";
+
+export const PishtiJoystick = ({toggleQr}) => {
+
+    const navigation = useNavigation();
+
+    const {player} = usePlayer();
+
+    const {session, newSession, quitSession} = usePishtiSession();
+    const {pishti} = usePishti();
+
+    const [disabled, setDisabled] = useState<boolean>(false);
+
+    const [quitSessionModal, setQuitSessionModal] = useState<boolean>(false);
+
+    // console.log("joyss.......", player, session?.home, session?.away)
+    // console.log("joyss.......", (player?.id !== session?.home?.id && player?.id !== session?.away?.id))
+    return (
+        <View style={joystickStyles.box}>
+            <View style={{width: '100%', flexDirection: 'row', flex:3}}>
+                <View style={joystickStyles.joyStickButton}>
+                    {session?.id && session?.status === 'WAITING' &&
+                        <Pressable onPress={toggleQr}>
+                            <MaterialCommunityIcons name="qrcode-scan" size={24} color={LOKAL_COLORS.OFFLINE} />
+                        </Pressable>
+                    }
+                    {session?.id && session?.status === 'STARTED' && 
+                        <Pressable onPress={() => navigation.navigate('pishti', {sessionId: session?.id})}>
+                            <MaterialCommunityIcons name="refresh" size={40} color={LOKAL_COLORS.OFFLINE} />
+                        </Pressable>
+                    }
+                </View>
+                <View style={[joystickStyles.joyStickButton, {justifyContent: 'center',alignItems: 'center'}]}>
+                    {session?.status === 'INITIAL' && <Nipple text={'başla'} disabled={disabled} onPress={() => newSession()}></Nipple>}
+
+                    {session?.status === 'WAITING' && 
+                        player?.id !== session?.home?.id && player?.id !== session?.away?.id &&
+                        <Nipple text={'otur'} disabled={disabled} onPress={() => pishtiApi.session.sit(session?.id)}></Nipple>
+                    }
+                </View>
+                <View style={joystickStyles.joyStickButton}>
+                    {session && session?.status !== 'INITIAL' && 
+                        <Pressable onPress={() => setQuitSessionModal(!quitSessionModal)}>
+                            <LokalText style={{color: LOKAL_COLORS.OFFLINE, fontSize: 40}}>X</LokalText>
+                        </Pressable>
+                    }
+                    <LokalModal visible={quitSessionModal} title={'Oyun kapatılsın mı?'} 
+                        accept={quitSession} 
+                        decline={() => setQuitSessionModal(!quitSessionModal)}
+                    />
+                </View>
+            </View>
+        </View>
+    );
+
+    // return (
+    //     <View style={joystickStyles.box}>
+    //         <View style={{width: '100%', flexDirection: 'row', flex:3}}>
+    //             <View style={joystickStyles.joyStickButton}>
+    //                 {session && 
+    //                     <Pressable onPress={toggleQr}>
+    //                         <MaterialCommunityIcons name="qrcode-scan" size={24} color={LOKAL_COLORS.OFFLINE} />
+    //                     </Pressable>
+    //                 }
+    //             </View>
+    //             <View style={[joystickStyles.joyStickButton, {justifyContent: 'center',alignItems: 'center'}]}>
+    //                 {session?.status === 'INITIAL' && 
+    //                     <Nipple text={'başla'} disabled={disabled} onPress={() => newSession()}></Nipple>
+    //                 }
+                    
+    //                 {session?.status === 'WAITING' && 
+    //                     session?.away?.id === 'chirak' && session?.home?.id !== player.id && 
+    //                     <Nipple text={'otur'} disabled={disabled} onPress={() => pishtiApi.session.sit(session?.id)}></Nipple>
+    //                 }
+    //             </View>
+    //             <View style={joystickStyles.joyStickButton}>
+    //                 <LokalModal visible={quitSessionModal} title={'Oyun kapatılsın mı?'} 
+    //                     accept={quitSession} 
+    //                     decline={() => setQuitSessionModal(!quitSessionModal)}
+    //                 />
+    //                 <Pressable onPress={() => setQuitSessionModal(!quitSessionModal)}>
+    //                     <LokalText style={{color: LOKAL_COLORS.OFFLINE, fontSize: 40}}>X</LokalText>
+    //                 </Pressable>
+    //             </View>
+    //         </View>
+    //     </View>
+    // );
+}
