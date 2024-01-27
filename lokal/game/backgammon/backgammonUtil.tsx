@@ -22,8 +22,7 @@ export interface Backgammon {
     turn?: Turn;
     possibleMoves?: Move[];
     status?: string; //"WAITING_PLAYERS" | "WAITING_FIRST_DICES" | "STARTING" | "STARTED" | "ENDED";
-    report?: BackgammonReport; 
-    
+    report?: BackgammonReport;
 }
 
 export class BackgammonReport {

@@ -1,5 +1,3 @@
-import { Card } from "../card/Card";
-
 export interface PishtiSession {
     id: string;
     home: PishtiPlayer;

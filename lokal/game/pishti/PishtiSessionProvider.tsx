@@ -31,16 +31,16 @@ export const PishtiSessionProvider = ({sessionId, children}: any) => {
     const home = useMemo<PishtiPlayer>(() => {
         return pishtiSession?.home || {...player, score: 0} as PishtiPlayer;
     }, [pishtiSession]);
-    const away = useMemo<PishtiPlayer>(() => {
-        return pishtiSession?.away || {...CHIRAK_PLAYER, score: 0} as PishtiPlayer;
-    }, [pishtiSession]);
+    // const away = useMemo<PishtiPlayer>(() => {
+    //     return pishtiSession?.away || {...CHIRAK_PLAYER, score: 0} as PishtiPlayer;
+    // }, [pishtiSession]);
     const status = useMemo<string>(() => (pishtiSession?.status || "INITIAL"), [pishtiSession]);
     
     const [settings, setSettings] = useState<PishtiSettings>(() => (pishtiSession?.settings || {raceTo: 2}));
     const [opponent, setOpponent] = useState<string>(CHIRAK_PLAYER.id);
 
     useEffect(() => {
-        if (!sessionId || pishtiSession?.id) return;
+        if (!sessionId || !socketClient) return;
         
         const dataFetch = async () => {
 
@@ -53,7 +53,7 @@ export const PishtiSessionProvider = ({sessionId, children}: any) => {
 
         dataFetch();
 
-        socketClient.subscribe(`/topic/session/pishti/${sessionId}`, (message: any) => {
+        socketClient?.subscribe(`/topic/session/pishti/${sessionId}`, (message: any) => {
             const sessionEvent = JSON.parse(message.body);
 
             console.debug("pishti session event!", sessionEvent);
@@ -82,8 +82,10 @@ export const PishtiSessionProvider = ({sessionId, children}: any) => {
             dataFetch();
         });
 
-        return () => socketClient.unsubscribe(`/topic/session/pishti/${sessionId}`);
-    }, [sessionId, pishtiSession, reload, socketClient]);
+        return () => {
+            socketClient?.unsubscribe(`/topic/session/pishti/${sessionId}`);
+        }
+    }, [sessionId, reload, socketClient]);
 
     const createNewSession = async (): Promise<PishtiSession> => {
         const newSessionResponse = await pishtiApi.session.new(opponent, settings);
@@ -122,7 +124,7 @@ export const PishtiSessionProvider = ({sessionId, children}: any) => {
         session: {
             id: pishtiSession ? pishtiSession.id : sessionId,
             home: home,
-            away: away,
+            away: pishtiSession?.away,
             status: status,
             settings: settings,
             currentMatchId: pishtiSession?.currentMatchId,

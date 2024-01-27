@@ -1,17 +1,21 @@
 import { useEffect, useMemo, useRef } from "react";
-import { Pressable, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
+import { State, TapGestureHandler } from "react-native-gesture-handler";
 import Animated, { interpolateColor, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from "react-native-reanimated";
 import Svg, { Path } from "react-native-svg";
-import { LOKAL_COLORS } from "../../../../common/LokalConstants";
 import { backgammonApi } from "../../../../chirak/chirakApi/game/backgammonApi";
-import { Point, useBackgammonGame } from "../../BackgammonContext";
-import { State, TapGestureHandler } from "react-native-gesture-handler";
+import { LOKAL_COLORS } from "../../../../common/LokalConstants";
+import { Point } from "../../BackgammonContext";
+import { useBackgammon } from "../../BackgammonProvider";
+import { useBackgammonSession } from "../../BackgammonSessionProvider";
+import { Move } from "../../backgammonUtil";
 
 const colors = ["#FFC27A", "#7EDAB9", "#45A6E5", "#FE8777"];
 
 interface PointProps {
     index: number;
     point: Point;
+    // currentMove: Move;
     isSelected: boolean;
     isMoveable: boolean;
     isTarget: boolean;
@@ -21,6 +25,7 @@ interface PointProps {
     children: any;
 }
 export const PointComponent = ({
+    index,
     point, 
     isMoveable,
     isSelected,
@@ -31,22 +36,20 @@ export const PointComponent = ({
     children
 }: PointProps) => {
 
-    const {
-        id,
-        sessionId,
-        currentPlayer,
-        opponent,
-        turn,
-        dimensions
-    } = useBackgammonGame();
+    const {session} = useBackgammonSession();
+    const {id, currentPlayer, opponent, turn, dimensions} = useBackgammon();
 
     const ledColor = useMemo(() => {
         if (isSelected) return '#fff';
         if (isTarget) return LOKAL_COLORS.WHITE;
-        if (isPickable) return LOKAL_COLORS.WARNING;
+        if (isPickable) return LOKAL_COLORS.ONLINE_FADED;
+        if (turn.playerId === opponent.id) {
+            if (turn.moves.map((move: Move) => move.to).includes(23-index)) return LOKAL_COLORS.WARNING;
+            if (turn.moves.map((move: Move) => move.from).includes(23-index)) return LOKAL_COLORS.WARNING_FADED;
+        }
     
         return LOKAL_COLORS.OFFLINE;
-    }, [isTarget, isMoveable, isPickable, isSelected, selectedPoint]);
+    }, [isTarget, isMoveable, isPickable, isSelected, selectedPoint, turn]);
 
     const blinkProgress = useSharedValue(0);
     const blinkStyle = useAnimatedStyle(() => {
@@ -105,7 +108,7 @@ export const PointComponent = ({
                                     return;
                                 }
                                 if (isTarget) {
-                                    backgammonApi.game.move(sessionId, id, [{from: selectedPoint, to: point.index}]);
+                                    backgammonApi.game.move(session.id, id, [{from: selectedPoint, to: point.index}]);
                                     setSelectedPoint(null);
                                     return;
                                 }
@@ -116,7 +119,7 @@ export const PointComponent = ({
                         }
                         onDouble={() => {
                             if (isPickable) {
-                                backgammonApi.game.move(sessionId, id, [{from: point.index, to: -1}]);
+                                backgammonApi.game.move(session.id, id, [{from: point.index, to: -1}]);
 
                                 setSelectedPoint(null);
                             }
@@ -136,7 +139,7 @@ export const PointComponent = ({
 }
 
 const PointLed = ({point, children}: any) => {
-    const {dimensions} = useBackgammonGame();
+    const {dimensions} = useBackgammon();
     return (
         <View style={{
             position: 'relative', 
@@ -155,7 +158,7 @@ const PointLed = ({point, children}: any) => {
 }
 
 const PointTriangle = ({point, isTarget}: any) => {
-    const {dimensions} = useBackgammonGame();
+    const {dimensions} = useBackgammon();
 
     return (
         <View style={{

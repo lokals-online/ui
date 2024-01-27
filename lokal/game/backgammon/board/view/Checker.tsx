@@ -2,8 +2,10 @@ import { View } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withSpring } from "react-native-reanimated";
 import { backgammonApi } from "../../../../chirak/chirakApi/game/backgammonApi";
-import { Point, useBackgammonGame } from "../../BackgammonContext";
+import { Point } from "../../BackgammonContext";
 import { LokalText } from "../../../../common/LokalCommons";
+import { useBackgammon } from "../../BackgammonProvider";
+import { useBackgammonSession } from "../../BackgammonSessionProvider";
 
 interface MovingCheckerProps {
     index: number;
@@ -18,7 +20,8 @@ interface MovingCheckerProps {
 }
 export const MovingChecker = ({index, top, left, point, color, droppablePoints, setSelectedChecker, setHighlightedPoint, pickable}: MovingCheckerProps) => {
 
-    const {id,sessionId,dimensions} = useBackgammonGame();
+    const {session} = useBackgammonSession();
+    const {id, dimensions} = useBackgammon();
 
     const offset = {x: left, y: top}
     const translateX = useSharedValue(0);
@@ -79,7 +82,7 @@ export const MovingChecker = ({index, top, left, point, color, droppablePoints, 
                 translateY.value = 0;
                 translateX.value = 0;
 
-                runOnJS(backgammonApi.game.move)(sessionId, id,[{from: point.index, to: target.index}]);
+                runOnJS(backgammonApi.game.move)(session.id, id,[{from: point.index, to: target.index}]);
             }
         });
 
@@ -87,7 +90,7 @@ export const MovingChecker = ({index, top, left, point, color, droppablePoints, 
         .onEnd((event, success) => {
         if (!success || !pickable) return;
         // pick
-        runOnJS(backgammonApi.game.move)(sessionId, id,[{from: point.index, to: -1}]);
+        runOnJS(backgammonApi.game.move)(session.id, id,[{from: point.index, to: -1}]);
     });
 
     const composed = Gesture.Race(panGesture, doubleTap);
@@ -130,14 +133,8 @@ interface HitCheckerProps {
 }
 export const HitChecker = ({top, left, color, droppablePoints, setSelectedChecker, setHighlightedPoint}: HitCheckerProps) => {
 
-    const {
-        id,
-        sessionId,
-        currentPlayer,
-        opponent,
-        turn,
-        dimensions
-    } = useBackgammonGame();
+    const {session} = useBackgammonSession();
+    const {id, dimensions} = useBackgammon();
 
     // const offset = {x: point.positionLeft, y: point.positionTop}
     const translateX = useSharedValue(0);
@@ -182,7 +179,7 @@ export const HitChecker = ({top, left, color, droppablePoints, setSelectedChecke
                 translateY.value = 0;
                 translateX.value = 0;
 
-                runOnJS(backgammonApi.game.move)(sessionId, id, [{from: 24, to: target.index}]);
+                runOnJS(backgammonApi.game.move)(session.id, id, [{from: 24, to: target.index}]);
             }
         });
 
@@ -207,7 +204,7 @@ export const HitChecker = ({top, left, color, droppablePoints, setSelectedChecke
 }
 
 export const Checker = ({multiplier, color, style}: any) => {
-    const {dimensions} = useBackgammonGame();
+    const {dimensions} = useBackgammon();
     return <View style={[{
         borderRadius: 100,
         borderWidth: 3,

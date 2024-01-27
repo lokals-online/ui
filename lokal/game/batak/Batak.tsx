@@ -1,73 +1,48 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { LokalClub, LokalDiamond, LokalHeart, LokalSpade, LokalSquare, LokalSquareAnimated, LokalText } from "../../common/LokalCommons";
 import { Pressable, StyleSheet, View } from "react-native";
-import { LOKAL_COLORS } from "../../common/LokalConstants";
-import { useLokal } from "../../LokalContext";
 import { batakApi } from "../../chirak/chirakApi/game/batakApi";
+import { LokalClub, LokalDiamond, LokalHeart, LokalSpade, LokalSquare, LokalText, LokalTextBlink } from "../../common/LokalCommons";
+import { INNER_WIDTH, LOKAL_COLORS } from "../../common/LokalConstants";
 import { usePlayer } from "../../player/CurrentPlayer";
-import { Batak, BatakMove, BatakPlayer } from "./batakUtil";
-import { Card, CardType } from "../card/Card";
 import { CardComponent } from "../pishti/Card";
-import { useBatakSession } from "./BatakSessionProvider";
 import { useBatak } from "./BatakProvider";
+import { useBatakSession } from "./BatakSessionProvider";
+import { BatakMove } from "./batakUtil";
+import { Card } from "../card/Card";
+import Animated, { useAnimatedStyle, useSharedValue, withRepeat, withTiming } from "react-native-reanimated";
+import { BatakFormComponent } from "./BatakFormComponent";
 
 export const BatakComponent = ({}: any) => {
 
     const {player, socketClient} = usePlayer();
-    const {session, updateSessionSettings} = useBatakSession();
-    const {batak} = useBatak();
+    const {sessionId, settings, sessionStatus, updateSessionSettings} = useBatakSession();
+    const {
+        batakId, hand, rightPlayer, leftPlayer, topPlayer, 
+        availableCards, availableBids, trick, turn, status
+    } = useBatak();
 
     const [raceToFormVisible, setRaceToFormVisible] = useState<boolean>(false);
-    const [disabled, setDisabled] = useState<boolean>(false);
+    
+    const isCurrentPlayerTurn = useMemo<boolean>(() => turn === player?.id, [player, turn]);
+    const [playing, setPlaying] = useState<boolean>(false);
 
-    const currentPlayerIndex = useMemo(() => {
-        if (batak?.players) {
-            return batak?.players?.findIndex((p: BatakPlayer) => p.id === player.id)
-        }
-    }, [batak, session, player]);
-    const rightPlayer = useMemo(() => {
-        if (batak?.players) {
-            return batak?.players[(currentPlayerIndex+1)%4];
-        }
-    }, [batak, session]);
-    const topPlayer = useMemo(() => {
-        if (batak?.players) {
-            return batak?.players[(currentPlayerIndex+2)%4]
-        }
-    }, [batak, session]);
-    const leftPlayer = useMemo(() => {
-        if (batak?.players) {
-            return batak?.players[(currentPlayerIndex+3)%4]
-        }
-    }, [batak, session]);
+    const playCard = (card: Card) => {
+        setPlaying(true);
 
-    const availableBids = useMemo(() => {
-        if (batak?.bid?.value) {
-            return Array.from({length: 13-batak.bid.value}, (_, i) => (i+batak.bid.value) + 1)
-        }
-    }, [batak]);
+        batakApi.game
+            .play(sessionId, batakId, card)
+            .then(() => setPlaying(false));
+    };
 
-    // console.debug("BATAK", batak, session?.currentMatch);
-
-    if (!batak) {
-        return <View style={{height: '100%', justifyContent: 'space-evenly', alignContent: 'space-around'}}>
-            <View>
-                {!raceToFormVisible && <Pressable onPress={() => setRaceToFormVisible(!raceToFormVisible)}>
-                    <LokalText style={{fontSize: 24}}>[{session?.settings?.raceTo}] yapan kazanır</LokalText>
-                </Pressable>
-                }
-                {raceToFormVisible && [11,31,51,71].map((raceTo, index) => 
-                    <Pressable 
-                        key={`raceTo_${index}`}
-                        onPress={() => {
-                            updateSessionSettings({raceTo: raceTo});
-
-                            setRaceToFormVisible(!raceToFormVisible);
-                        }}>
-                            <LokalText style={{fontSize: 40, color: (index === session?.settings?.raceTo) ? LOKAL_COLORS.ONLINE : LOKAL_COLORS.ONLINE_FADED}}>{raceTo}</LokalText>
-                        </Pressable>
-                )}
-            </View>
+    if (sessionStatus === 'INITIAL') {
+        return <BatakFormComponent />
+    }
+    else if (status === 'ENDED') {
+        return <View style={{
+            flex: 1, justifyContent: 'center', alignItems: 'center',
+            zIndex:100, width:'100%', height: '100%', position: 'absolute', top: 0, left:0
+        }}>
+            <LokalText>oyun bitti.</LokalText>
         </View>
     }
     else return (
@@ -76,39 +51,36 @@ export const BatakComponent = ({}: any) => {
                 <View style={{flex: 1}}></View>
                 <View style={style.topPlayer}>
                     <View style={{height: '60%', flexDirection: 'row'}}>
-                        {topPlayer && <BatakPlayerComp batakPlayer={topPlayer} turn={batak.turn} />}
+                        {topPlayer && <BatakPlayerComp batakPlayer={topPlayer} turn={turn} />}
                     </View>    
                 </View>
                 <View style={{flex: 1}}></View>
             </View>
             <View style={{flex: 2, flexDirection: 'row'}}>
                 <View style={style.leftPlayer}>
-                    {leftPlayer && <BatakPlayerComp batakPlayer={leftPlayer} turn={batak.turn} />}
+                    {leftPlayer && <BatakPlayerComp batakPlayer={leftPlayer} turn={turn} />}
                 </View>
-                <View style={{flex: 2}}>
-                    {/* <LokalText>{batak.turn}</LokalText> */}
-                    {batak?.status === 'BIDDING' && batak?.turn === player.id && 
+                <View style={{flex: 2, justifyContent: 'center', alignItems: 'center'}}>
+                    {status === 'BIDDING' && turn === player.id && 
                         <BidSelection 
                             availableBids={availableBids} 
-                            onSelect={(bidValue: number) => batakApi.game.bid(session?.id, batak?.id, bidValue)} 
+                            onSelect={(bidValue: number) => batakApi.game.bid(sessionId, batakId, bidValue)} 
                         />
                     }
-                    {batak?.status === 'WAITING_TRUMP' && batak.turn === player.id && 
-                        <BidTypeSelection onSelect={(cardSuit: string) => batakApi.game.chooseBetType(session?.id, batak?.id, cardSuit)} />
+                    {status === 'WAITING_TRUMP' && turn === player.id && 
+                        <BidTypeSelection onSelect={(cardSuit: string) => batakApi.game.chooseBetType(sessionId, batakId, cardSuit)} />
                     }
-                    {batak?.status === 'STARTED' && 
-                        <View style={{height: '100%', width: '100%', display: 'flex', aspectRatio: 1/1}}>
-                            {batak?.trick?.moves.map((move: BatakMove, i: number) => 
+                    {status === 'STARTED' && 
+                        <View style={{height: '40%', aspectRatio: 1/1, justifyContent: 'center', alignItems: 'center'}}>
+                            {trick?.moves.map((move: BatakMove, i: number) => 
                                 <View key={`stackCard${i}`} 
                                     style={{
-                                        top: `${Math.floor(Math.random() * 20)}%`,
-                                        left: `${Math.floor(Math.random() * 40)}%`,
+                                        top: move.card.number,
+                                        left: move.card.number,
                                         position: 'absolute',
-                                        height: '60%',
+                                        height: '100%',
                                         aspectRatio: 1/1.5,
                                         display: 'flex',
-                                        borderWidth: 1,
-                                        borderColor: '#eee'
                                     }}>
                                     <CardComponent number={move.card.number} type={move.card.type} />
                                 </View>
@@ -117,30 +89,29 @@ export const BatakComponent = ({}: any) => {
                     }
                 </View>
                 <View style={style.rightPlayer}>
-                    {rightPlayer && <BatakPlayerComp batakPlayer={rightPlayer} turn={batak.turn} />}
+                    {rightPlayer && <BatakPlayerComp batakPlayer={rightPlayer} turn={turn} />}
                 </View>
             </View>
             <View style={[style.currentPlayer]}>
-                <View style={[{height: '60%', flexDirection: 'row'}, (batak.turn === player.id) ? style.activeTurn : {}]}>
-                    {batak.hand?.map((card: Card, index: number) => 
-                        <Pressable 
-                            key={`card_${index}`}
-                            style={{height: '100%', aspectRatio: 1/1.5, marginLeft: -15, display: 'flex'}}
-                            disabled={(disabled) || (player.id !== batak.turn) || (!batak?.availableCards?.find(c => (c.type == card.type) && (c.number == card.number)))} 
-                            onPress={() => {
-                                setDisabled(true);
-                                batakApi.game
-                                    .play(session?.id, batak?.id, card)
-                                    .then(() => setDisabled(false));
-                            }}
-                        >
-                            <CardComponent 
-                                style={{backgroundColor: (batak?.availableCards?.find(c => (c.type == card.type) && (c.number == card.number))) ? 'white': '#eee'}} 
-                                number={card.number} 
-                                type={card.type} 
-                            />
-                        </Pressable>
-                    )}
+                <View style={[
+                    {flexDirection: 'row', justifyContent: 'center'}, 
+                    (turn === player.id) ? style.activeTurn : {}
+                ]}>
+                    {hand?.map((card: Card, index: number) => {
+                        const isAvailable = (availableCards?.find(c => (c.type == card.type) && (c.number == card.number)));
+                        return <CardComponent 
+                            key={`currentPlayerCards_${index}`}
+                            style={{
+                                backgroundColor: isAvailable ? 'white': '#eee',
+                                marginLeft: -15, 
+                                borderWidth: 1, borderColor: '#ccc',
+                                maxWidth: INNER_WIDTH/(hand?.length), minWidth: 40, aspectRatio: 1/1.5, height: 'auto'
+                            }} 
+                            number={card.number} 
+                            type={card.type} 
+                            onPress={() => {if (isCurrentPlayerTurn && isAvailable && !playing) playCard(card)}}
+                        />
+                    })}
                 </View>
             </View>
         </View>
@@ -151,9 +122,25 @@ export const BatakComponent = ({}: any) => {
 const BATAK_PLAYER_SIZE = 30;
 const BatakPlayerComp = ({batakPlayer, turn}: any) => {
 
+    const progress = useSharedValue(1);
+    const animatedStyle = useAnimatedStyle(() => {
+        return {opacity: progress.value}
+    });
+
+    useEffect(() => {
+        progress.value = withRepeat(withTiming(0.8, {duration: 200}), -1, true);
+    }, []);
+
     if (turn === batakPlayer?.id) {
+        return <Animated.View style={[animatedStyle]}>
+            <LokalSquare style={{
+                width: BATAK_PLAYER_SIZE,
+                height: BATAK_PLAYER_SIZE,
+                backgroundColor: LOKAL_COLORS.WARNING
+            }} />
+        </Animated.View>
         // console.log(batakPlayer, turn)
-        return <LokalSquareAnimated size={BATAK_PLAYER_SIZE} style={{backgroundColor: LOKAL_COLORS.WARNING}} />
+        // return <LokalSquareAnimated size={BATAK_PLAYER_SIZE} style={{backgroundColor: LOKAL_COLORS.WARNING}} />
     }
     else {
         return <LokalSquare style={{
@@ -189,7 +176,7 @@ const BidTypeSelection = ({onSelect}: any) => {
         <Pressable key={`bidTypeValue_SPADES`} onPress={() => onSelect('SPADES')}><LokalText style={{fontSize: 40}}>[<LokalSpade size={40} />]</LokalText></Pressable>
         <Pressable key={`bidTypeValue_CLUBS`} onPress={() => onSelect('CLUBS')}><LokalText style={{fontSize: 40}}>[<LokalClub size={40} />]</LokalText></Pressable>
         <Pressable key={`bidTypeValue_HEARTS`} onPress={() => onSelect('HEARTS')}><LokalText style={{fontSize: 40}}>[<LokalHeart size={40} />]</LokalText></Pressable>
-        <Pressable key={`bidTypeValue_DIAMONDS`} onPress={() => onSelect('SPADES')}><LokalText style={{fontSize: 40}}>[<LokalDiamond size={40} />]</LokalText></Pressable>
+        <Pressable key={`bidTypeValue_DIAMONDS`} onPress={() => onSelect('DIAMONDS')}><LokalText style={{fontSize: 40}}>[<LokalDiamond size={40} />]</LokalText></Pressable>
     </View>
 }
 

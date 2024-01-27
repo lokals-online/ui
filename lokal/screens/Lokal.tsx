@@ -51,14 +51,13 @@ const LokalComponent = ({navigation}: any) => {
             }]}>
                 {/* {status === LOKAL_STATUS.ONLINE && <YazihaneComponent />} */}
             </View>
-            <View style={[style.masa, {
-                height: (lokalHeight/2),
-                borderWidth: 1, borderColor: 'pink'
+            <View style={[style.masa, { height: (lokalHeight/2),
+                // borderWidth: 1, borderColor: 'pink'
                 // backgroundColor: 'red'
             }]}>
                 {DEFAULT_MENU.map((item) => 
                     <Pressable key={item.value} onPress={() => navigation.navigate(item.path)}>
-                        <LokalText style={{fontSize: 42, color: tagColor}}>{item.value}</LokalText>
+                        <LokalText style={{fontSize: 50, color: tagColor}}>{item.value}</LokalText>
                     </Pressable>
                 )}
                 {/* <TagCloud 
@@ -93,8 +92,6 @@ export const style = StyleSheet.create({
         width: '100%'
     },
     masa: {
-        aspectRatio: 1/1,
-        // height: '50%',
         justifyContent: 'center',
         alignContent: 'center',
         alignItems: 'center',

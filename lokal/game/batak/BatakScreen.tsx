@@ -16,7 +16,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 export const BatakScreen = ({route, navigation}: any) => {
 
-    const {player, status, socketClient} = usePlayer();
+    const {status} = usePlayer();
     
     const headerHeight = useHeaderHeight();
     const lokalHeight = useMemo(() => DEVICE_DIMENSIONS.height - headerHeight, [headerHeight]);
@@ -25,7 +25,6 @@ export const BatakScreen = ({route, navigation}: any) => {
 
     const sessionId = route?.params?.sessionId;
 
-    console.log("session screen params", sessionId);
     return <View style={[style.lokal, {height: (DEVICE_DIMENSIONS.height-headerHeight)}]}>
         <GestureHandlerRootView>
             <BatakSessionProvider sessionId={sessionId}>

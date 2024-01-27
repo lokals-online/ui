@@ -1,7 +1,7 @@
 import axios from "axios";
 import { LOKAL_API_URL } from "../../../common/LokalConstants";
-import { Backgammon, Move } from "../../../game/backgammon/backgammonUtil";
-import { Card, Pishti, PishtiSession, PishtiSettings } from "../../../game/pishti/pishtiUtil";
+import { Pishti, PishtiSession, PishtiSettings } from "../../../game/pishti/pishtiUtil";
+import { Card } from "../../../game/card/Card";
 
 const PISHTI_API = `${LOKAL_API_URL}/pishti`;
 
@@ -17,7 +17,8 @@ export const pishtiApi = {
         fetch: async (id: string): Promise<PishtiSession> => {
             return axios
                 .get(`${PISHTI_API}/${id}`)
-                .then(response => response.data as PishtiSession);
+                .then(response => response.data)
+                .catch(console.error);
         },
         sit: async (id: string): Promise<any> => {
             return axios.post(`${PISHTI_API}/${id}/sit`)

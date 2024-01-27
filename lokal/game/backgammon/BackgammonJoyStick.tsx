@@ -19,8 +19,8 @@ export const BackgammonJoystick = ({toggleQr}) => {
     
     const {player} = usePlayer();
 
-    const {session, newSession, quitSession} = useBackgammonSession();
-    const {backgammon} = useBackgammon();
+    const {session, quitSession} = useBackgammonSession();
+    const {} = useBackgammon();
 
     const [quitSessionModal, setQuitSessionModal] = useState<boolean>(false);
 
@@ -60,25 +60,25 @@ export const BackgammonJoystick = ({toggleQr}) => {
 }
 const GameButton = () => {
     const {player} = usePlayer();
-    const {session, newSession} = useBackgammonSession();
-    const {backgammon} = useBackgammon();
+    const {session} = useBackgammonSession();
+    const {id, turn} = useBackgammon();
 
     const isOwner = useMemo<boolean>(() => session?.home?.id === player.id, [player, session]);
 
     const [disabled, setDisabled] = useState<boolean>(false);
 
     return <>
-        {backgammon?.turn?.playerId === player.id && !backgammon?.turn?.dices &&
+        {turn?.playerId === player.id && !turn?.dices &&
             <Nipple text={'zar at'} 
                 disabled={disabled}
                 onPress={() => {
                     setDisabled(true);
                     backgammonApi.game
-                        .rollDice(session.id, backgammon.id)
+                        .rollDice(session.id, id)
                         .then(() => setDisabled(false));
                 }}></Nipple>
         }
-        {backgammon?.turn?.playerId !== player.id && <BasKonus />}
+        {/* {turn?.playerId !== player.id && <BasKonus />} */}
     </>
 }
 const SessionButton = () => {

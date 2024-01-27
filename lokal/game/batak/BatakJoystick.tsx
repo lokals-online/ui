@@ -16,16 +16,16 @@ export const BatakJoystick = ({toggleQr}) => {
     const navigation = useNavigation();
     const {player} = usePlayer();
 
-    const {session, newSession, quitSession} = useBatakSession();
-    const {batak} = useBatak();
+    const {sessionId, currentPlayer, newSession, quitSession} = useBatakSession();
+    const {batakId} = useBatak();
 
     const [quitSessionModal, setQuitSessionModal] = useState<boolean>(false);
 
     const [disabled, setDisabled] = useState<boolean>(false);
 
-    const isPlayer = useMemo<boolean>(() => !!session?.players?.find((p: BatakPlayer) => p.id === player.id), [session]);
-    const isNew = useMemo<boolean>(() => session?.id === 'new', [session]);
-    const qrAvailable = useMemo<boolean>(() => !!session?.id && session?.id !== 'new' && !batak, [session, batak]);
+    const isPlayer = useMemo<boolean>(() => currentPlayer?.id === player?.id, [currentPlayer]);
+    const isNew = useMemo<boolean>(() => sessionId === 'new', [sessionId]);
+    const qrAvailable = useMemo<boolean>(() => sessionId && sessionId !== 'new' && !batakId, [sessionId, batakId]);
 
     return (
         <View style={joystickStyles.box}>
@@ -36,15 +36,15 @@ export const BatakJoystick = ({toggleQr}) => {
                             <MaterialCommunityIcons name="qrcode-scan" size={24} color={LOKAL_COLORS.OFFLINE} />
                         </Pressable>
                     }
-                    {batak && <Pressable onPress={() => navigation.navigate('batak', {sessionId: session?.id})}>
+                    {batakId && <Pressable onPress={() => navigation.navigate('batak', {sessionId: sessionId})}>
                         <MaterialCommunityIcons name="refresh" size={40} color={LOKAL_COLORS.OFFLINE} />
                     </Pressable>}
                 </View>
                 <View style={[joystickStyles.joyStickButton, {justifyContent: 'center',alignItems: 'center'}]}>
                     {isNew && <Nipple text={'başla'} disabled={disabled} onPress={() => newSession()}></Nipple>}
                     
-                    {session?.id && session?.id !== 'new' && !isPlayer && 
-                        <Nipple text={'otur'} disabled={disabled} onPress={() => batakApi.session.sit(session?.id)}></Nipple>
+                    {sessionId && sessionId !== 'new' && !isPlayer && 
+                        <Nipple text={'otur'} disabled={disabled} onPress={() => batakApi.session.sit(sessionId)}></Nipple>
                     }
                 </View>
                 <View style={joystickStyles.joyStickButton}>

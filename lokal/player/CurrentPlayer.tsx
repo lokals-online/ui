@@ -186,36 +186,10 @@ export const CurrentPlayerProvider = ({children}: any) => {
 
     if (!currentPlayer || !lokalSocketClient) {
         return <View style={{flex: 1, height: '100%', width: '100%', justifyContent: 'center', alignItems: 'center'}}>
-            <Pressable onPress={() => reload()} style={{}}>
-                {/* <LokalText>yenile</LokalText> */}
-                <BasKonus></BasKonus>
+            <Pressable onPress={() => reload()}>
+                <LokalFetchingState />
             </Pressable>
         </View>
     }
     else return <CurrentPlayerContext.Provider value={value}>{children}</CurrentPlayerContext.Provider>
 }
-
-
-
-// console.log("status: ", currentPlayer)
-    // if (status === LOKAL_STATUS.OFFLINE) {
-    //     return <View style={{display: 'flex', flex: 1, width: '100%', height: '100%', backgroundColor: LOKAL_COLORS.OFFLINE}}>
-    //         <ImageBackground source={require('../../assets/noise-bg.png')} resizeMode={'cover'} style={{
-    //             flex: 1, width: '100%', height: '100%', 
-    //             justifyContent: 'center', alignItems: 'center', flexDirection: 'row'
-    //         }}>
-    //             <View style={{
-    //                 width: '100%', height: '50%', 
-    //                 justifyContent: 'center', alignItems: 'center', flexDirection: 'row',
-    //                 backgroundColor: LOKAL_COLORS.ONLINE
-    //             }}>
-    //                 <LokalText>LOKALS</LokalText>
-    //                 <MaterialCommunityIcons
-    //                     onPress={() => setStatus(LOKAL_STATUS.ONLINE)}
-    //                     name="power-standby" size={100} color={'#aaa'} />
-    //                 <LokalText style={{color: '#aaa'}}>OFFLINE</LokalText>
-    //             </View>
-    //         </ImageBackground>
-    //     </View>
-    // }
-    // else 

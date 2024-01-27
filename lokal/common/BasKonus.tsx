@@ -46,7 +46,7 @@ export const BasKonus = () => {
     const {session} = useBackgammonSession();
 
     const [recording, setRecording] = useState<Recording>();
-    const [permissionResponse, requestPermission] = Audio.usePermissions();
+    // const [permissionResponse, requestPermission] = Audio.usePermissions();
     const [sound, setSound] = useState<Sound>();
 
     const blinkProgress = useSharedValue(1);

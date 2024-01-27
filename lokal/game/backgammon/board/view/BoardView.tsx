@@ -1,31 +1,24 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { LokalText, LokalTextBlink } from "../../../../common/LokalCommons";
 import { LOKAL_COLORS } from "../../../../common/LokalConstants";
 import { usePlayer } from "../../../../player/CurrentPlayer";
-import { Point, useBackgammonGame } from "../../BackgammonContext";
-import { BackgammonPlayer, Move, Turn } from "../../backgammonUtil";
+import { Point } from "../../BackgammonContext";
+import { Move } from "../../backgammonUtil";
 import { Checker } from "./Checker";
 import { PointComponent } from "./Point";
 import { BackgammonBarComponent } from "./BackgammonBar";
+import { useBackgammon } from "../../BackgammonProvider";
 
-export interface BoardProps {
-    possibleMoves?: Array<Move>;
-    selectedDice?: number;
-    // addMove: (move: Move) => void;
-    // moves: Array<Move>;
+interface BackgammonMoveEvent {
+    playerId: string;
+    move: Move;
 }
-export const BoardView = ({ possibleMoves }: BoardProps) => {
 
-    const { player } = usePlayer();
-    const {
-        id,
-        sessionId,
-        currentPlayer,
-        opponent,
-        turn,
-        dimensions
-    } = useBackgammonGame();
+export const BoardView = () => {
+
+    const { player, socketClient } = usePlayer();
+    const {id, currentPlayer, opponent, turn, possibleMoves, dimensions} = useBackgammon();
 
     const points = Array.from({ length: 24 }, (_, i) => {
         if (i >= 18) {
@@ -46,7 +39,6 @@ export const BoardView = ({ possibleMoves }: BoardProps) => {
     const [highlightedPoint, setHighlightedPoint] = useState<number>(-1);
 
     const targetPoints = useMemo<Array<number>>(() => {
-        // console.log("selected!", selectedPoint)
         if (selectedPoint === undefined || selectedPoint === null) return [];
         return possibleMoves
             .filter((move: Move) => (move.from === selectedPoint))
@@ -75,8 +67,6 @@ export const BoardView = ({ possibleMoves }: BoardProps) => {
             dice2 = turn?.remainingDices?.includes(turn?.dices[1]) ? LOKAL_COLORS.WARNING : LOKAL_COLORS.ONLINE_FADED;
         }
 
-        console.log(turn.moves, dice1, dice2);
-
         return [dice1, dice2];
     }, [turn]);
 
@@ -85,17 +75,16 @@ export const BoardView = ({ possibleMoves }: BoardProps) => {
 
             <BackgammonBarComponent selectedPoint={selectedPoint} setSelectedPoint={setSelectedPoint} targetPoints={targetPoints} />
 
-            {/* {points.map((point: Point, index: number) => <LokalText key={index}>{index}</LokalText>)} */}
             {points.map((point: Point, index: number) => {
                 const isMoveable = (turn.playerId === player.id) && possibleMoves && possibleMoves.some((m: Move) => (m.from === index));
                 const isPickable = (turn.playerId === player.id) && possibleMoves && possibleMoves.some((m: Move) => (m.from === index) && (m.to === -1));
                 const isSelected = selectedPoint === index;
                 const isTarget = targetPoints.includes(index);
-                
-                // console.debug("current player checkers", currentPlayer);
-                // console.log("opponent checkers", opponent);
+
                 return <PointComponent key={`point-${index}`}
-                    index={index} point={point}
+                    index={index} 
+                    point={point}
+                    // currentMove={currentMove}
                     isMoveable={isMoveable}
                     isTarget={isTarget}
                     isPickable={isPickable}
@@ -179,7 +168,7 @@ export const DiceComponent = ({value, size, color}: any) => {
             justifyContent: 'center', 
             alignItems: 'center',
         }}>
-            <LokalText onSelectionChange={() => console.log("asdad")} pointerEvents="none" style={{color: 'white', fontSize: size || 30}}>
+            <LokalText pointerEvents="none" style={{color: 'white', fontSize: size || 30}}>
                 {value || '?'}
             </LokalText>
         </View>

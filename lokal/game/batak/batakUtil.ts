@@ -1,12 +1,13 @@
 import { Player } from "../../player/Player";
-import { Card } from "../pishti/pishtiUtil";
+import { Card } from "../card/Card";
 
 export interface BatakSession {
     id: string;
+    currentMatchId: string;
     players: Array<BatakPlayer>;
     settings: BatakSettings;
-    currentMatchId: string;
     matches: Array<Batak>;
+    status: string;
     scores?: Map<String, number>;
 }
 
@@ -16,8 +17,9 @@ export interface Batak {
     availableCards: Array<Card>;
     players: Array<Player>;
     turn: string;
+    scores?: Map<String, number>;
     bid: {playerId: string, value: number, trump?: string}
-    status: string;
+    status: string; // BIDDING, WAITING_TRUMP, STARTED, ENDED
     trick?: {moves: Array<BatakMove>}
 }
 

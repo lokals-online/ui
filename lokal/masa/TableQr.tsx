@@ -1,24 +1,39 @@
-// import Clipboard from '@react-native-clipboard/clipboard';
+import Clipboard from '@react-native-clipboard/clipboard';
 import { useEffect } from "react";
-import { Alert, Button, Pressable } from "react-native";
+import { Alert, Platform, Share, TouchableOpacity } from "react-native";
 import SvgQRCode from "react-native-qrcode-svg";
 import Animated, { interpolateColor, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
-import { INNER_WIDTH, LOKAL_COLORS } from '../common/LokalConstants';
 import { LokalText } from '../common/LokalCommons';
+import { INNER_WIDTH, LOKAL_COLORS } from '../common/LokalConstants';
 
 export const TableQr = ({url}: any) => {
 
     const bgProgress = useSharedValue(0);
-    // const radiusProgress = useSharedValue(LOKAL_MASA_RADIUS);
 
     useEffect(() => {
         bgProgress.value = withTiming(1 - bgProgress.value, { duration: 1000 });
-        // radiusProgress.value = withTiming(0, { duration: 1000 });
-
-        // () => {
-        //     bgProgress.value = withTiming(1 - bgProgress.value, { duration: 1000 });
-        // }
     }, []);
+
+    const onShare = async () => {
+        try {
+          const result = await Share.share({
+            title: url,
+            message: url,
+            url: url
+          });
+          if (result.action === Share.sharedAction) {
+            if (result.activityType) {
+              // shared with activity type of result.activityType
+            } else {
+              // shared
+            }
+          } else if (result.action === Share.dismissedAction) {
+            // dismissed
+          }
+        } catch (error: any) {
+          Alert.alert(error.message);
+        }
+    };
 
     const animatedStyle = useAnimatedStyle(() => {
         return {
@@ -35,23 +50,13 @@ export const TableQr = ({url}: any) => {
 
     return <Animated.View style={[{ width: '100%', height: '100%'}, animatedStyle]} >
         <SvgQRCode value={url} size={INNER_WIDTH} color={LOKAL_COLORS.ONLINE} backgroundColor={'transparent'} />
-        {/* <Pressable onPress={() => console.log("fsaf")} */}
-        <Pressable onPress={() => {
-            // Clipboard.setString(url);
-            console.log(url);
-            // Alert.alert('', 'kopyalandı!', [{text: 'OK', onPress: () => console.log('OK Pressed')}]);
-        }}
-            style={{
-                paddingTop: 10,
-                flexDirection: 'row', 
-                justifyContent: 'space-between',
-                alignContent: 'space-between',
-                alignItems: 'stretch'}}
-        >
-            {/* <LokalText numberOfLines={1} style={{width: '50%', color: LOKAL_COLORS.OFFLINE}}>{gameUrl}</LokalText> */}
-            <LokalText style={{color: LOKAL_COLORS.OFFLINE}} numberOfLines={1}>{url}</LokalText>
-            <LokalText style={{width: '50%', alignContent: 'flex-end'}}>[paylaş]</LokalText>
-            {/* <Button title=''><LokalText style={{width: '50%', alignContent: 'flex-end'}}>[paylaş]</LokalText></Button> */}
-        </Pressable>
+        <TouchableOpacity style={{alignItems: 'center'}} onPress={() => {
+            if (Platform.OS === 'web') {
+                Clipboard.setString(url);
+            }
+            else {
+                onShare();
+            }
+        }}><LokalText>[paylas]</LokalText></TouchableOpacity>
     </Animated.View>
 }

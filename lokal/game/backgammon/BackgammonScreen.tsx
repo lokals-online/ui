@@ -15,7 +15,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 export const BackgammonScreen = ({route, navigation}: any) => {
 
-    const {player, status, socketClient} = usePlayer();
+    const {status} = usePlayer();
     
     const headerHeight = useHeaderHeight();
     const lokalHeight = useMemo(() => DEVICE_DIMENSIONS.height - headerHeight, [headerHeight]);
@@ -24,7 +24,6 @@ export const BackgammonScreen = ({route, navigation}: any) => {
 
     const sessionId = route?.params?.sessionId;
 
-    console.log("session screen params", sessionId);
     return <View style={[style.lokal, {height: (DEVICE_DIMENSIONS.height-headerHeight)}]}>
         <GestureHandlerRootView>
             <BackgammonSessionProvider sessionId={sessionId}>

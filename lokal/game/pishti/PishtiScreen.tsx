@@ -1,18 +1,17 @@
-import * as Linking from "expo-linking";
 import { useHeaderHeight } from '@react-navigation/elements';
-import { usePlayer } from '../../player/CurrentPlayer';
-import PishtiSessionProvider from './PishtiSessionProvider';
-import { View } from 'react-native';
-import { style } from '../../screens/Lokal';
+import * as Linking from "expo-linking";
 import { useMemo, useState } from 'react';
-import { PishtiScoreboard } from './PishtiScoreboard';
+import { View } from 'react-native';
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { DEVICE_DIMENSIONS, LOKAL_COLORS, LOKAL_STATUS } from '../../common/LokalConstants';
-import PishtiComponent from './Pishti';
-import { LokalText } from '../../common/LokalCommons';
 import { TableQr } from '../../masa/TableQr';
+import { usePlayer } from '../../player/CurrentPlayer';
+import { style } from '../../screens/Lokal';
+import PishtiComponent from './Pishti';
 import { PishtiJoystick } from './PishtiJoystick';
 import { PishtiProvider } from "./PishtiProvider";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { PishtiScoreboard } from './PishtiScoreboard';
+import PishtiSessionProvider from './PishtiSessionProvider';
 
 export const Pishti2Screen = ({route, navigation}: any) => {
 
@@ -28,7 +27,6 @@ export const Pishti2Screen = ({route, navigation}: any) => {
     return <View style={[style.lokal, {height: (DEVICE_DIMENSIONS.height-headerHeight)}]}>
         <GestureHandlerRootView>
             <PishtiSessionProvider sessionId={sessionId}>
-
                 <PishtiProvider>
                     <View style={[style.yazihane, {height: lokalHeight/4}]}>
                         <PishtiScoreboard />
@@ -46,7 +44,6 @@ export const Pishti2Screen = ({route, navigation}: any) => {
                         <PishtiJoystick toggleQr={() => setQrVisible(!qrVisible)} />
                     </View>
                 </PishtiProvider>
-
             </PishtiSessionProvider>
         </GestureHandlerRootView>
     </View>

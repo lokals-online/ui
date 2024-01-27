@@ -8,11 +8,11 @@ import { usePishti } from "./PishtiProvider";
 
 export const PishtiScoreboard = () => {
     const {player, socketClient} = usePlayer();
-    const {session, updateSessionSettings} = usePishtiSession();
+    const {session} = usePishtiSession();
     const {pishti} = usePishti();
 
     const currentMatchHomeScore = useMemo<number>(() => {
-        return session?.home?.id === player.id ? pishti?.score: pishti?.opponent?.score;
+        return session?.home?.id === player.id ? pishti?.score : pishti?.opponent?.score;
     }, [session, pishti]);
     
     const currentMatchAwayScore = useMemo<number>(() => {
@@ -26,10 +26,10 @@ export const PishtiScoreboard = () => {
         session?.id !== 'new' && <View style={{height: '100%', flexDirection: 'row'}}>
             <View style={{flex: 1, justifyContent: 'center', alignContent: 'center', alignItems: 'center'}}>
                 <LokalText style={{color: homeColor}}>
-                    {(session?.home?.username === 'oyuncu') ? 'ev sahibi' : session?.home?.username}
+                    {(session?.home?.username === 'oyuncu') ? <LokalText>ev sahibi</LokalText> : <LokalText>session?.home?.username</LokalText>}
                 </LokalText>
                 <LokalText style={{fontSize: 40, color: homeColor}}>{session?.home?.score}</LokalText>
-                <LokalText style={{fontSize: 20, color: homeColor}}>({currentMatchHomeScore})</LokalText>
+                {!!currentMatchHomeScore && <LokalText style={{fontSize: 20, color: homeColor}}>({currentMatchHomeScore})</LokalText>}
             </View>
             <View style={{flex: 1, flexDirection: 'column', justifyContent: 'center', alignContent: 'center', alignItems: 'center'}}>
                 {session?.status && session.status === 'STARTED' && <>
@@ -42,11 +42,14 @@ export const PishtiScoreboard = () => {
                 </>}
             </View>
             <View style={{flex: 1, justifyContent: 'center', alignContent: 'center', alignItems: 'center'}}>
-                <LokalText style={{color: awayColor}}>
-                    {((session?.away) && (session?.away?.username !== 'oyuncu')) ? session?.away?.username : 'deplasman'}
-                </LokalText>
-                <LokalText style={{fontSize: 40, color: awayColor}}>{session?.away?.score  || 0}</LokalText>
-                <LokalText style={{fontSize: 20, color: awayColor}}>({currentMatchAwayScore})</LokalText>
+                {!session?.away && <LokalText style={{fontSize: 40}}>?</LokalText>}
+                {session?.away && <>
+                    <LokalText style={{color: awayColor}}>
+                        {((session?.away) && (session?.away?.username !== 'oyuncu')) ? <LokalText>{session?.away?.username}</LokalText> : <LokalText>deplasman</LokalText>}
+                    </LokalText>
+                    <LokalText style={{fontSize: 40, color: awayColor}}>{session?.away?.score  || 0}</LokalText>
+                    {!!currentMatchAwayScore && <LokalText style={{fontSize: 20, color: awayColor}}>({currentMatchAwayScore})</LokalText>}
+                </>}
             </View>
         </View>
     );

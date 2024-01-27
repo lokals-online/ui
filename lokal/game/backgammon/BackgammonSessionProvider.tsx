@@ -48,110 +48,57 @@ const BackgammonSessionProvider = ({sessionId, children}: any) => {
     const [opponent, setOpponent] = useState<string>(CHIRAK_PLAYER.id);
 
     useEffect(() => {
-        if (!sessionId || !socketClient) return;
-        loadSession()
-            .then(res => {
-                console.log("session LOADED :::::: ============>", res)
-                if (res) {
-                    // setId(res.id);
-                    setBackgammonSession(res);
-                    setSettings(res.settings);
-                }
-            })
-            .catch((err) => {
-                console.log(err)
-                Alert.alert('HATA!', 'oyun bulunamadı!', [{text: 'OK', onPress: () => quitSession()}]);
-            })
-    }, [sessionId, socketClient, reload]);
+        if (!sessionId || !socketClient.active || !socketClient) return;
 
-    useEffect(() => {
-        if (!backgammonSession || backgammonSession?.id === 'new' || !socketClient) return;
+        const dataFetch = async () => {
 
-        if (backgammonSession && backgammonSession.status !== 'INITIAL') {
-            socketClient.subscribe(`/topic/session/backgammon/${backgammonSession?.id}`, (message: any) => {
-                // setReload(true);
-                const sessionEvent = JSON.parse(message.body);
-    
-                if (sessionEvent['type'] === 'SIT') {
-                    console.log("SIT", sessionEvent);
-    
-                    setBackgammonSession(sessionEvent['backgammonSession']);
-                }
-                else if (sessionEvent['type'] === 'QUIT') {
-                    console.log("QUIT", sessionEvent);
-    
-                    setBackgammonSession(sessionEvent['backgammonSession']);
-                }
-                else if (sessionEvent['type'] === 'FIRST_DIE') {
-                    console.log("FIRST_DIE", sessionEvent);
-    
-                    setBackgammonSession(sessionEvent['backgammonSession']);
-                }
-                else if (sessionEvent['type'] === 'START') {
-                    console.log("START", sessionEvent);
-                    console.log("game is starting in 1sec....")
-                    
-                    setTimeout(() => {
-                        setBackgammonSession(sessionEvent['backgammonSession']);
-                    }, 1000);
-                }
-                else if (sessionEvent['type'] === 'END') {
-                    console.log("ENDED", sessionEvent);
-    
-                    setBackgammonSession(sessionEvent['backgammonSession']);
-                }
-                // dataFetch();
-            });
-        }
+            const session = await backgammonApi.session.fetch(sessionId)
 
-        // if (backgammonSession?.currentMatch) {
-        //     console.debug("==============>  subscribing...........");
-        //     socketClient.subscribe(`/topic/game/backgammon/${backgammonSession.currentMatch.id}`, (message: any) => {
-        //         const backgammonEvent = JSON.parse(message.body);
-        //         const updatedBackgammon = backgammonEvent['backgammon'] as Backgammon;
-        //         if (backgammonEvent['type'] === 'START') { // ?
-        //             console.debug("START", updatedBackgammon);
-        //         }
-        //         else if (backgammonEvent['type'] === 'ROLL_DICE') {
-        //             console.debug("ROLL_DICE", updatedBackgammon);                    
-        //             // setBackgammon(updatedBackgammon);
-        //             // setRollingDice(false);
-        //         }
-        //         else if (backgammonEvent['type'] === 'TURN') {
-        //             console.debug("TURN", updatedBackgammon);
-        //             // setBackgammon(updatedBackgammon);
-        //         }
-        //         else if (backgammonEvent['type'] === 'MOVE') {
-        //             console.debug("MOVE", updatedBackgammon);
-        //             // setBackgammon(updatedBackgammon);
-        //             // handleMove(updatedBackgammon);
-        //         }
-        //         else if (backgammonEvent['type'] === 'GAME_OVER') {
-        //             console.debug("GAME OVER", updatedBackgammon);
-                    
-        //             // gameOver(updatedBackgammon);
-        //             // setBackgammon(updatedBackgammon);
-        //         }
-        //         else {
-        //             console.debug("UNKNOWN EVENT:", backgammonEvent)
-        //         }
+            console.debug(session);
+      
+            setBackgammonSession(session);
+        };
 
-        //         setBackgammonSession({...backgammonSession, currentMatch: updatedBackgammon});
-        //     });
-        // }
+        dataFetch();
+
+        const bgSessionSubscription = socketClient?.subscribe(`/topic/session/backgammon/${sessionId}`, (message: any) => {
+            // const sessionEvent = JSON.parse(message.body);
+
+            // if (sessionEvent['type'] === 'SIT') {
+            //     console.log("SIT", sessionEvent);
+
+            //     setBackgammonSession(sessionEvent['backgammonSession']);
+            // }
+            // else if (sessionEvent['type'] === 'QUIT') {
+            //     console.log("QUIT", sessionEvent);
+
+            //     setBackgammonSession(sessionEvent['backgammonSession']);
+            // }
+            // else if (sessionEvent['type'] === 'FIRST_DIE') {
+            //     console.log("FIRST_DIE", sessionEvent);
+
+            //     setBackgammonSession(sessionEvent['backgammonSession']);
+            // }
+            // else if (sessionEvent['type'] === 'START') {
+            //     console.log("START", sessionEvent);
+            //     console.log("game is starting in 1sec....")
+                
+            //     setTimeout(() => {
+            //         setBackgammonSession(sessionEvent['backgammonSession']);
+            //     }, 1000);
+            // }
+            // else if (sessionEvent['type'] === 'END') {
+            //     console.log("ENDED", sessionEvent);
+
+            //     setBackgammonSession(sessionEvent['backgammonSession']);
+            // }
+            dataFetch();
+        });
 
         return () => {
-            socketClient.unsubscribe(`/topic/session/backgammon/${backgammonSession?.id}`)
-            // socketClient.unsubscribe(`/topic/game/backgammon/${backgammonSession?.currentMatch?.id}`)
+            bgSessionSubscription.unsubscribe();
         }
-    }, [backgammonSession, socketClient]);
-
-    const loadSession = async (): Promise<BackgammonSession> => {
-        if (sessionId) {
-            return backgammonApi.session.fetch(sessionId);
-        }
-        return null;
-    }
+    }, [sessionId, socketClient]);
 
     const createNewSession = async (): Promise<BackgammonSession> => {
         if (!opponent) return null;

@@ -104,18 +104,6 @@ export const LokalSquare = ({style, children}: any) =>
         {children}
     </View>;
 
-export const LokalSquareBlink = ({style}: any) => 
-    <View style={[{
-        width: 20,
-        aspectRatio: 1/1,
-        borderWidth: 0, 
-        borderRadius: 3, 
-        backgroundColor: LOKAL_COLORS.ONLINE, 
-        borderColor: LOKAL_COLORS.NOT_AVAILABLE, 
-        color: LOKAL_COLORS.ONLINE
-    }, style]}>
-    </View>;
-
 export const LokalSquareAnimated = ({size, style}: any) => {
 
     const sv = useSharedValue(size);
