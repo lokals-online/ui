@@ -5,7 +5,7 @@ import { View } from "react-native";
 import { DEVICE_DIMENSIONS, LOKAL_COLORS, LOKAL_STATUS } from '../../common/LokalConstants';
 import { TableQr } from '../../masa/TableQr';
 import { usePlayer } from "../../player/CurrentPlayer";
-import { style } from "../../screens/Lokal";
+import { style } from "../../screens/LokalScreen";
 import BackgammonGamePlayComponent from './Backgammon';
 import { BackgammonJoystick } from './BackgammonJoyStick';
 import { BackgammonProvider } from "./BackgammonProvider";

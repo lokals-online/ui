@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react"
-import { Alert, Animated, Modal, Pressable, StyleSheet, View } from "react-native"
+import { Alert, Animated, Modal, Pressable, Text, StyleSheet, View } from "react-native"
 import { LokalText, LokalTextBlink } from "./LokalCommons"
 import { LOKAL_STATUS, LOKAL_COLORS, LOKAL_DEFAULT_FONT_SIZE } from "./LokalConstants"
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useAnimatedScrollHandler, useAnimatedStyle, useSharedValue } from "react-native-reanimated";
 import { usePlayer } from "../player/CurrentPlayer";
 import { BlurView } from "expo-blur";
 
@@ -15,7 +14,10 @@ export const LokalsOnlineBar = ({navigation}: any) => {
 
     return (
         <View style={{flexDirection: 'row',justifyContent: 'center'}}>
-            <View style={[{alignItems: 'flex-end',justifyContent: 'center'}]}>
+            <LokalText>LOKALS</LokalText>
+            <LokalText style={{marginLeft: 2, marginRight: 2, color: status === LOKAL_STATUS.ONLINE ? LOKAL_COLORS.ONLINE : LOKAL_COLORS.OFFLINE}}>&#9632;</LokalText>
+            <LokalText style={{color: status === LOKAL_STATUS.ONLINE ? LOKAL_COLORS.ONLINE : LOKAL_COLORS.OFFLINE}}>ONLINE</LokalText>
+            {/* <View style={[{alignItems: 'flex-end',justifyContent: 'center'}]}>
                 <LokalText>LOKALS</LokalText>
             </View>
             <MaterialCommunityIcons 
@@ -63,7 +65,7 @@ export const LokalsOnlineBar = ({navigation}: any) => {
                         </Pressable>
                     </BlurView>
                 </Modal>
-            </View>
+            </View> */}
         </View>
     )
 }

@@ -30,7 +30,7 @@ export const ClosedCard = ({number}: any) => {
     </View>
 };
 
-export const CardComponent = ({style, number, type, onPress}: any) => {
+export const CardComponent = ({style, number, type, disabled, onPress}: any) => {
 
     const color = (type === 'DIAMONDS' || type === 'HEARTS') ? LOKAL_COLORS.NOT_AVAILABLE : LOKAL_COLORS.OFFLINE;
     const fontSize = 15;
@@ -53,7 +53,7 @@ export const CardComponent = ({style, number, type, onPress}: any) => {
     }, [type]);
 
     return <Pressable 
-        disabled={(!onPress)}
+        disabled={disabled}
         onPress={onPress}
         style={[cardStyle.card, style]}
     >

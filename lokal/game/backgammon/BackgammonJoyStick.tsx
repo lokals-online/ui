@@ -20,7 +20,6 @@ export const BackgammonJoystick = ({toggleQr}) => {
     const {player} = usePlayer();
 
     const {session, quitSession} = useBackgammonSession();
-    const {} = useBackgammon();
 
     const [quitSessionModal, setQuitSessionModal] = useState<boolean>(false);
 

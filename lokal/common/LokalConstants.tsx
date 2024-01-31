@@ -58,6 +58,7 @@ export const LOKAL_COLORS = {
     OFFLINE: '#717171',
     WARNING: '#dd7409ff',
     WARNING_FADED: '#dd7409aa',
+    ERROR: '#9f4444',
     NOT_AVAILABLE: '#9f4444',
     JOYSTICK_ACTIVE: '#008000',
     ACCEPT: '#2fd416',

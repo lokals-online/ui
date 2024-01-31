@@ -14,8 +14,6 @@ import {
 } from "../common/LokalConstants";
 import { chirakRegistrationApi } from "../chirak/chirakApi/chirakRegistrationApi";
 import { storageRepository } from "../common/storageRepository";
-import { LokalsOnlineBar } from '../common/LokalsOnlineBar';
-import { BasKonus } from '../common/BasKonus';
 
 const CURRENT_PLAYER = '@CurrentPlayer';
 
@@ -38,8 +36,9 @@ interface CurrentPlayerContext {
     status: string;
     changeStatus: (status: string) => void;
     socketClient: Client;
-    login?: (username: string, password: string) => Promise<CurrentPlayer>;
-    register?: (username: string, password: string) => Promise<void>;
+    // login?: (username: string, password: string) => Promise<CurrentPlayer>;
+    // register?: (username: string, password: string) => Promise<void>;
+    registerAnonymous?: (username: string) => Promise<boolean>;
     reload?: () => void;
 }
 
@@ -140,6 +139,26 @@ export const CurrentPlayerProvider = ({children}: any) => {
         setCurrentPlayer({...currentPlayer, settings: defaultSettings})
     }
 
+    const registerAnonymous = async (username: string): Promise<boolean> => {
+        return chirakRegistrationApi
+            .registerAnonymous(currentPlayer?.id, username)
+            .then(updateResponse => {
+                if (updateResponse) {
+                    updateCurrentPlayer({...currentPlayer, username: username});
+
+                    return true;
+                }
+                else {
+                    console.error("sorun olustu.");
+                    return false;
+                }
+            })
+            .catch(() => {
+                console.error("sorun olustu.");
+                return false;
+            });
+    }
+
     // TODO: obscure password!
     const register = async (username: string, password: string): Promise<void> => {
         chirakRegistrationApi
@@ -179,8 +198,9 @@ export const CurrentPlayerProvider = ({children}: any) => {
         status: status,
         changeStatus: setStatus,
         socketClient: lokalSocketClient,
-        login: login,
-        register: register,
+        // login: login,
+        // register: register,
+        registerAnonymous: registerAnonymous,
         reload: reload
     }
 

@@ -31,6 +31,7 @@ export interface BatakMove {
 export interface BatakPlayer {
     id: string;
     username: string;
+    bid: number;
     hand: Array<Card>;
     score: number;
 }

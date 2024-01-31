@@ -1,3 +1,4 @@
+import * as Linking from "expo-linking";
 import React, { useEffect, useMemo, useState } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
 import { batakApi } from "../../chirak/chirakApi/game/batakApi";
@@ -11,22 +12,22 @@ import { BatakMove } from "./batakUtil";
 import { Card } from "../card/Card";
 import Animated, { useAnimatedStyle, useSharedValue, withRepeat, withTiming } from "react-native-reanimated";
 import { BatakFormComponent } from "./BatakFormComponent";
+import { TableQr } from "../../masa/TableQr";
 
-export const BatakComponent = ({}: any) => {
+export const BatakComponent = () => {
 
-    const {player, socketClient} = usePlayer();
-    const {sessionId, settings, sessionStatus, updateSessionSettings} = useBatakSession();
+    const {player} = usePlayer();
+    const {sessionId, sessionStatus} = useBatakSession();
     const {
         batakId, hand, rightPlayer, leftPlayer, topPlayer, 
         availableCards, availableBids, trick, turn, status
     } = useBatak();
-
-    const [raceToFormVisible, setRaceToFormVisible] = useState<boolean>(false);
     
     const isCurrentPlayerTurn = useMemo<boolean>(() => turn === player?.id, [player, turn]);
     const [playing, setPlaying] = useState<boolean>(false);
 
     const playCard = (card: Card) => {
+        console.log("playing card", card, turn);
         setPlaying(true);
 
         batakApi.game
@@ -37,7 +38,10 @@ export const BatakComponent = ({}: any) => {
     if (sessionStatus === 'INITIAL') {
         return <BatakFormComponent />
     }
-    else if (status === 'ENDED') {
+    else if (sessionStatus === 'WAITING_PLAYERS') {
+        return <TableQr url={Linking.createURL(`/batak/${sessionId}`)} />
+    }
+    else if (sessionStatus === 'ENDED') {
         return <View style={{
             flex: 1, justifyContent: 'center', alignItems: 'center',
             zIndex:100, width:'100%', height: '100%', position: 'absolute', top: 0, left:0
@@ -51,14 +55,14 @@ export const BatakComponent = ({}: any) => {
                 <View style={{flex: 1}}></View>
                 <View style={style.topPlayer}>
                     <View style={{height: '60%', flexDirection: 'row'}}>
-                        {topPlayer && <BatakPlayerComp batakPlayer={topPlayer} turn={turn} />}
+                        {topPlayer && <BatakPlayerComp batakPlayer={topPlayer} />}
                     </View>    
                 </View>
                 <View style={{flex: 1}}></View>
             </View>
             <View style={{flex: 2, flexDirection: 'row'}}>
                 <View style={style.leftPlayer}>
-                    {leftPlayer && <BatakPlayerComp batakPlayer={leftPlayer} turn={turn} />}
+                    {leftPlayer && <BatakPlayerComp batakPlayer={leftPlayer} />}
                 </View>
                 <View style={{flex: 2, justifyContent: 'center', alignItems: 'center'}}>
                     {status === 'BIDDING' && turn === player.id && 
@@ -89,7 +93,7 @@ export const BatakComponent = ({}: any) => {
                     }
                 </View>
                 <View style={style.rightPlayer}>
-                    {rightPlayer && <BatakPlayerComp batakPlayer={rightPlayer} turn={turn} />}
+                    {rightPlayer && <BatakPlayerComp batakPlayer={rightPlayer} />}
                 </View>
             </View>
             <View style={[style.currentPlayer]}>
@@ -107,9 +111,12 @@ export const BatakComponent = ({}: any) => {
                                 borderWidth: 1, borderColor: '#ccc',
                                 maxWidth: INNER_WIDTH/(hand?.length), minWidth: 40, aspectRatio: 1/1.5, height: 'auto'
                             }} 
+                            disabled={!(isCurrentPlayerTurn && isAvailable && !playing)}
                             number={card.number} 
                             type={card.type} 
-                            onPress={() => {if (isCurrentPlayerTurn && isAvailable && !playing) playCard(card)}}
+                            onPress={() => {
+                                if (isCurrentPlayerTurn && isAvailable && !playing) playCard(card)
+                            }}
                         />
                     })}
                 </View>
@@ -120,35 +127,50 @@ export const BatakComponent = ({}: any) => {
 }
 
 const BATAK_PLAYER_SIZE = 30;
-const BatakPlayerComp = ({batakPlayer, turn}: any) => {
+const BatakPlayerComp = ({batakPlayer}: any) => {
+
+    const {player, socketClient} = usePlayer();
+    const batak = useBatak();
 
     const progress = useSharedValue(1);
     const animatedStyle = useAnimatedStyle(() => {
-        return {opacity: progress.value}
+        return {
+            opacity: progress.value,
+            backgroundColor: (batak?.turn === batakPlayer?.id) ? LOKAL_COLORS.WARNING : LOKAL_COLORS.ONLINE_FADED
+        } 
     });
 
-    useEffect(() => {
-        progress.value = withRepeat(withTiming(0.8, {duration: 200}), -1, true);
-    }, []);
+    const [playerBid, setPlayerBid] = useState<number>(batakPlayer.bid);
 
-    if (turn === batakPlayer?.id) {
-        return <Animated.View style={[animatedStyle]}>
-            <LokalSquare style={{
-                width: BATAK_PLAYER_SIZE,
-                height: BATAK_PLAYER_SIZE,
-                backgroundColor: LOKAL_COLORS.WARNING
-            }} />
+    useEffect(() => {
+        if (batak?.turn === batakPlayer?.id) {
+            progress.value = withRepeat(withTiming(0.8, {duration: 200}), -1, true);
+        }
+        else {
+            progress.value = 1;
+        }
+
+        const batakPlayerBidSubscription = socketClient?.subscribe(`/topic/game/batak/${batak.batakId}/player/${batakPlayer.id}/bid`, (message: any) => {
+            const playerBid = JSON.parse(message.body) as number;
+            
+            setPlayerBid(playerBid);
+        });
+
+        return () => {
+            batakPlayerBidSubscription?.unsubscribe();
+        }
+    }, [batak.turn, socketClient]);
+
+    useEffect(() => {
+        setPlayerBid(undefined);
+    }, [batak.batakId]);
+
+    return <>
+        <Animated.View style={[{width: BATAK_PLAYER_SIZE, height: BATAK_PLAYER_SIZE, justifyContent: 'center', alignItems: 'center'}, animatedStyle]}>
+            {batak?.status === 'BIDDING' && !!playerBid && <LokalText>{playerBid}</LokalText>}
+            {/* {batak?.status === 'STARTED' && batak?.bid?.playerId === batakPlayer.id && <LokalText>{playerBid}[{batak?.bid?.trump}]</LokalText>} */}
         </Animated.View>
-        // console.log(batakPlayer, turn)
-        // return <LokalSquareAnimated size={BATAK_PLAYER_SIZE} style={{backgroundColor: LOKAL_COLORS.WARNING}} />
-    }
-    else {
-        return <LokalSquare style={{
-            width: BATAK_PLAYER_SIZE,
-            height: BATAK_PLAYER_SIZE,
-            backgroundColor: LOKAL_COLORS.ONLINE_FADED
-        }} />
-    }
+    </>
 }
 
 const BidSelection = ({availableBids, onSelect}: any) => {

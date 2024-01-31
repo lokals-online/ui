@@ -31,11 +31,11 @@ export const BatakJoystick = ({toggleQr}) => {
         <View style={joystickStyles.box}>
             <View style={{width: '100%', flexDirection: 'row', flex:3}}>
                 <View style={joystickStyles.joyStickButton}>
-                    {qrAvailable && 
+                    {/* {qrAvailable && 
                         <Pressable onPress={toggleQr}>
                             <MaterialCommunityIcons name="qrcode-scan" size={24} color={LOKAL_COLORS.OFFLINE} />
                         </Pressable>
-                    }
+                    } */}
                     {batakId && <Pressable onPress={() => navigation.navigate('batak', {sessionId: sessionId})}>
                         <MaterialCommunityIcons name="refresh" size={40} color={LOKAL_COLORS.OFFLINE} />
                     </Pressable>}

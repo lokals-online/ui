@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
-import { LokalText } from "../../common/LokalCommons";
+import { LokalFetchingState, LokalText } from "../../common/LokalCommons";
 import { batakApi } from "../../chirak/chirakApi/game/batakApi";
 import { usePlayer } from "../../player/CurrentPlayer";
 import { BatakComponent } from "./Batak";
@@ -33,8 +33,8 @@ export const BatakSessionProvider = ({sessionId, children}: any) => {
 
     const [reload, setReload] = useState<boolean>(false);
 
-    const [batakSession, setBatakSession] = useState<BatakSession>({id: 'new', settings: {raceTo: 51}} as BatakSession);
-    const [settings, setSettings] = useState<BatakSettings>();
+    const [batakSession, setBatakSession] = useState<BatakSession>();
+    const [settings, setSettings] = useState<BatakSettings>({raceTo: 51});
     
     useEffect(() => {
 
@@ -148,7 +148,15 @@ export const BatakSessionProvider = ({sessionId, children}: any) => {
         updateSessionSettings: updateSessionSettings,
     };
 
-    return <BatakSessionContext.Provider value={value}>
+    if (!sessionId) {
+        return <BatakSessionContext.Provider value={{...value, sessionId: 'new', settings: settings}}>
+            {children}
+        </BatakSessionContext.Provider>
+    }
+    else if (sessionId && !batakSession?.id) {
+        return <LokalFetchingState />
+    }
+    else return <BatakSessionContext.Provider value={value}>
         {children}
     </BatakSessionContext.Provider>
 

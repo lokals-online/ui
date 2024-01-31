@@ -6,7 +6,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { DEVICE_DIMENSIONS, LOKAL_COLORS, LOKAL_STATUS } from '../../common/LokalConstants';
 import { TableQr } from '../../masa/TableQr';
 import { usePlayer } from '../../player/CurrentPlayer';
-import { style } from '../../screens/Lokal';
+import { style } from '../../screens/LokalScreen';
 import PishtiComponent from './Pishti';
 import { PishtiJoystick } from './PishtiJoystick';
 import { PishtiProvider } from "./PishtiProvider";

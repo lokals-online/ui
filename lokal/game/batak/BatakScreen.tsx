@@ -1,20 +1,18 @@
-import * as Linking from "expo-linking";
 import { useHeaderHeight } from '@react-navigation/elements';
 import { usePlayer } from "../../player/CurrentPlayer";
 import { useMemo, useState } from "react";
 import { View } from "react-native";
-import { style } from "../../screens/Lokal";
+import { style } from "../../screens/LokalScreen";
 import { BatakSessionProvider } from "./BatakSessionProvider";
 import { BatakScoreboard } from "./BatakScoreboard";
 import { BatakComponent } from "./Batak";
 import { TableQr } from "../../masa/TableQr";
 import { DEVICE_DIMENSIONS, LOKAL_COLORS, LOKAL_STATUS } from "../../common/LokalConstants";
-import { LokalText } from "../../common/LokalCommons";
 import { BatakJoystick } from "./BatakJoystick";
 import { BatakProvider } from "./BatakProvider";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
-export const BatakScreen = ({route, navigation}: any) => {
+export const BatakScreen = ({route}: any) => {
 
     const {status} = usePlayer();
     
@@ -37,8 +35,7 @@ export const BatakScreen = ({route, navigation}: any) => {
                         height: lokalHeight/2,
                         backgroundColor: (status === LOKAL_STATUS.ONLINE) ? LOKAL_COLORS.ONLINE : LOKAL_COLORS.OFFLINE
                     }]}>
-                        {!qrVisible && <BatakComponent />}
-                        {qrVisible && sessionId && <TableQr url={Linking.createURL(`/batak/${sessionId}`)} />}
+                        <BatakComponent />
                     </View>
                     
                     <View style={[style.joystick, {height: lokalHeight/4}]}>

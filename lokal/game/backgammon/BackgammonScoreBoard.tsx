@@ -1,10 +1,12 @@
-import { Pressable, View, StyleSheet } from "react-native";
+import { Pressable, View, StyleSheet, Modal, TextInput } from "react-native";
 import { LokalSquare, LokalText } from "../../common/LokalCommons";
-import { LOKAL_COLORS } from "../../common/LokalConstants";
+import { INNER_WIDTH, LOKAL_COLORS } from "../../common/LokalConstants";
 import { usePlayer } from "../../player/CurrentPlayer";
 import { Backgammon, BackgammonPlayer, BackgammonSettings } from "./backgammonUtil";
 import { useBackgammonSession } from "./BackgammonSessionProvider";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { BlurView } from "expo-blur";
+import { CurrentPlayerProfile, OpponentProfile, Player } from "../../player/Player";
 
 interface ScoreboardProps {
     home?: BackgammonPlayer;
@@ -13,18 +15,16 @@ interface ScoreboardProps {
 }
 export const BackgammonScoreboard = ({}: any) => {
     const {player} = usePlayer();
-    const {session, updateSessionSettings} = useBackgammonSession();
+    const {session} = useBackgammonSession();
 
     const homeColor = useMemo<string>(() => (player.id === session?.home?.id) ? LOKAL_COLORS.WHITE : LOKAL_COLORS.OFFLINE, [session, player]);
     const awayColor = useMemo<string>(() => (player.id === session?.away?.id) ? LOKAL_COLORS.WHITE : LOKAL_COLORS.OFFLINE, [session, player]);
 
-    console.log(player.id === session?.away?.id);
     return (
         session?.id !== 'new' && <View style={{height: '100%', flexDirection: 'row'}}>
             <View style={{flex: 1, justifyContent: 'center', alignContent: 'center', alignItems: 'center'}}>
-                <LokalText style={{color: homeColor}}>
-                    {(session?.home?.username === 'oyuncu') ? 'ev sahibi' : session?.home?.username}
-                </LokalText>
+                {session?.home?.id === player?.id && <CurrentPlayerProfile />}
+                {session?.home?.id !== player?.id && <OpponentProfile opponent={session?.home as Player} />}
                 <LokalText style={{fontSize: 40, color: homeColor}}>
                     {session?.home?.score}
                 </LokalText>
@@ -37,9 +37,9 @@ export const BackgammonScoreboard = ({}: any) => {
                 </>}
             </View>
             <View style={{flex: 1, justifyContent: 'center', alignContent: 'center', alignItems: 'center'}}>
-                <LokalText style={{color: awayColor}}>
-                    {((session?.away) && (session?.away?.username !== 'oyuncu')) ? session?.away?.username : 'deplasman'}
-                </LokalText>
+                {session?.away?.id === player?.id && <CurrentPlayerProfile />}
+                {session?.away?.id !== player?.id && <OpponentProfile opponent={session?.away as Player} />}
+                
                 <LokalText style={{fontSize: 40, color: awayColor}}>
                     {session?.away?.score  || 0}
                 </LokalText>
@@ -47,3 +47,4 @@ export const BackgammonScoreboard = ({}: any) => {
         </View>
     );
 }
+

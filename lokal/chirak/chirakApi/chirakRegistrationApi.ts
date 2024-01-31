@@ -41,5 +41,21 @@ export const chirakRegistrationApi = {
                 console.error(err)
                 return false;
             });
+    },
+    registerAnonymous: async (id: string, username: string) : Promise<boolean> => {
+        return axios.post(`${LOKAL_API_URL}${CHIRAK_API}/registerAnonymous`, {id: id, username: username})
+            .then(response => {
+                console.log(response)
+                if (response.status == 200) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            })
+            .catch(err => {
+                console.error(err)
+                return false;
+            });
     }
 }
