@@ -14,6 +14,15 @@ export default function App() {
 
     const [fontLoaded] = useFonts({EuropeanTeletext: require('./assets/fonts/EuropeanTeletext.ttf')});
 
+    const [assetsLoaded, setAssetsLoaded] = useState(false);
+
+    useEffect(() => {
+        if (fontLoaded) {
+            console.log("fontLoaded", fontLoaded);
+            setTimeout(() => setAssetsLoaded(true), 500);
+        }
+    }, [fontLoaded]);
+
     return (
         <View style={styles.container}>
             <View style={[{
@@ -22,7 +31,7 @@ export default function App() {
                 // aspectRatio: DEVICE_RATIO,
             }, styles.innerCalculated]}>
                 <StatusBar />
-                <CurrentPlayerProvider isReady={fontLoaded}>
+                <CurrentPlayerProvider assetsLoaded={assetsLoaded}>
                     <LokalApp />
                 </CurrentPlayerProvider>
             </View>

@@ -11,7 +11,7 @@ import {
     X_LOKAL_USER_HEADER_NAME
 } from "../common/LokalConstants";
 import { storageRepository } from "../common/storageRepository";
-import { LokalsOnlineIntro } from '../screens/Intro';
+import { ANIMATION_DURATION, INTRO_ANIMATION_DURATION, LokalsOnlineIntro } from '../screens/Intro';
 
 const CURRENT_PLAYER = '@CurrentPlayer';
 
@@ -202,12 +202,16 @@ export const CurrentPlayerProvider = ({assetsLoaded, children}: any) => {
         reload: reload
     }
 
-    const initialized = useMemo(() => (!currentPlayer || !lokalSocketClient || !assetsLoaded), [assetsLoaded, currentPlayer, lokalSocketClient]);
+    const initialized = useMemo(() => {
+        console.log("initialized...", (currentPlayer?.id && lokalSocketClient?.active && assetsLoaded));
+
+        return (currentPlayer?.id && lokalSocketClient?.active && assetsLoaded);
+    }, [assetsLoaded, currentPlayer, lokalSocketClient]);
     const [animationEnded, setAnimationEnded] = useState(false);
     
     useEffect(() => {
         if (initialized) {
-            setTimeout(() => {return setAnimationEnded(true)}, 2000);
+            setTimeout(() => setAnimationEnded(true), INTRO_ANIMATION_DURATION);
         }
     }, [initialized]);
 

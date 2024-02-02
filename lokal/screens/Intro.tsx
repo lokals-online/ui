@@ -4,33 +4,32 @@ import Animated, { Easing, FadeOut, Layout, SlideInLeft, useAnimatedStyle, useSh
 import { LOKAL_COLORS } from "../common/LokalConstants";
 
 const INTRO_FONT_SIZE = 20;
-const ANIMATION_DELAY = 1000;
-const ANIMATION_DURATION = 500;
+export const INTRO_ANIMATION_DURATION = 1000;
 
 export const LokalsOnlineIntro = ({initialized}: any) => {
     
     const squareBlinkProgress = useSharedValue(1);
-    const squareFontSizeProgress = useSharedValue(INTRO_FONT_SIZE);
     
     const squareStyle = useAnimatedStyle(() => {
         return {
-          opacity: squareBlinkProgress.value,
-          fontSize: squareFontSizeProgress.value
+          opacity: squareBlinkProgress.value
         }
     });
 
-	squareBlinkProgress.value = withRepeat(withTiming(0.6, {duration: 200}), (-1), true);
+    useEffect(() => {
+      squareBlinkProgress.value = withRepeat(withTiming(0.6, {duration: 200}), (initialized ? 1 : -1), true);
+    }, [initialized])
 
     return <View style={{backgroundColor: '#000', flex: 1, width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center'}}>
         <Animated.View style={{flexDirection: 'row', justifyContent: 'center'}}>
-            <Lokals />
+            {initialized && <Lokals />}
             
             <Animated.Text style={[
-              {fontFamily: 'EuropeanTeletext', color: LOKAL_COLORS.ONLINE}, 
+              {fontFamily: 'EuropeanTeletext', color: LOKAL_COLORS.ONLINE, fontSize: INTRO_FONT_SIZE}, 
               squareStyle
             ]}>&#9632;</Animated.Text>
             
-            <Online />
+            {initialized && <Online />}
         </Animated.View>
     </View>
 }
@@ -48,8 +47,10 @@ const Lokals = () => {
     });
   
     useEffect(() => {
-    	opacity.value = withDelay(ANIMATION_DELAY, withTiming(1, { duration: ANIMATION_DURATION, easing: Easing.out(Easing.exp) }));
-    	translateX.value = withDelay(ANIMATION_DELAY, withTiming(0, { duration: ANIMATION_DURATION, easing: Easing.out(Easing.exp) }));
+    	opacity.value = withTiming(1, { duration: INTRO_ANIMATION_DURATION, easing: Easing.out(Easing.exp) });
+    	translateX.value = withTiming(0, { duration: INTRO_ANIMATION_DURATION, easing: Easing.out(Easing.exp) });
+    	// opacity.value = withDelay(ANIMATION_DELAY, withTiming(1, { duration: ANIMATION_DURATION, easing: Easing.out(Easing.exp) }));
+    	// translateX.value = withDelay(ANIMATION_DELAY, withTiming(0, { duration: ANIMATION_DURATION, easing: Easing.out(Easing.exp) }));
     }, []);
 
 
@@ -73,8 +74,10 @@ const Online = () => {
     });
   
     useEffect(() => {
-      opacity.value = withDelay(ANIMATION_DELAY, withTiming(1, { duration: ANIMATION_DURATION, easing: Easing.out(Easing.exp) }));
-      translateX.value = withDelay(ANIMATION_DELAY, withTiming(0, { duration: ANIMATION_DURATION, easing: Easing.out(Easing.exp) }));
+      opacity.value = withTiming(1, { duration: INTRO_ANIMATION_DURATION, easing: Easing.out(Easing.exp) });
+    	translateX.value = withTiming(0, { duration: INTRO_ANIMATION_DURATION, easing: Easing.out(Easing.exp) });
+      // opacity.value = withDelay(ANIMATION_DELAY, withTiming(1, { duration: ANIMATION_DURATION, easing: Easing.out(Easing.exp) }));
+      // translateX.value = withDelay(ANIMATION_DELAY, withTiming(0, { duration: ANIMATION_DURATION, easing: Easing.out(Easing.exp) }));
     }, []);
 
 

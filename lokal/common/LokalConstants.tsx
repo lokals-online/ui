@@ -1,7 +1,7 @@
 import axios from "axios";
 import { Dimensions } from "react-native";
 
-export const LOKAL_API_HOST = `${process.env.EXPO_PUBLIC_LOKAL_API_PROTOCOL}://${process.env.EXPO_PUBLIC_LOKAL_API_HOST}:${process.env.EXPO_PUBLIC_LOKAL_API_PORT}`;
+export const LOKAL_API_HOST = process.env.EXPO_PUBLIC_LOKAL_API;
 export const WEBSOCKET_API = LOKAL_API_HOST;
 console.debug("LOKAL_API_HOST: ", LOKAL_API_HOST)
 export const LOKAL_API_URL = `${LOKAL_API_HOST}`;
