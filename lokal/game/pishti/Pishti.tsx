@@ -1,3 +1,4 @@
+import * as Linking from "expo-linking";
 import { BlurView } from "expo-blur";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { StyleSheet, View } from "react-native";
@@ -10,6 +11,7 @@ import { usePishtiSession } from "./PishtiSessionProvider";
 import { usePishti } from "./PishtiProvider";
 import { PishtiFormComponent } from "./PishtiFormComponent";
 import { Card } from "../card/Card";
+import { TableQr } from "../../masa/TableQr";
 
 interface CardPlayedEvent {
     playerId: string;
@@ -117,6 +119,9 @@ const PishtiComponent = () => {
 
     if (status === 'INITIAL') {
         return <PishtiFormComponent />
+    }
+    else if (status === 'WAITING') {
+        return <TableQr url={Linking.createURL(`/pishti/${session?.id}`)} />
     }
     else if (status === 'ENDED') {
         return <View style={{

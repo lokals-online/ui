@@ -18,12 +18,12 @@ export interface MenuItem {
     // onSelect: () => void;
 }
 const DEFAULT_MENU = [
+    { value: '#lokal', count: 5 },
     { value: "#" + LOKAL_GAMES.BACKGAMMON.name, path: LOKAL_GAMES.BACKGAMMON.url, count: 10 },
     { value: "#" + LOKAL_GAMES.BATAK.name, path: LOKAL_GAMES.BATAK.url, count: 10 },
     { value: "#" + LOKAL_GAMES.PISHTI.name, path: LOKAL_GAMES.PISHTI.url, count: 10 },
-    { value: '#lokal', count: 5 },
-    { value: '#kayit', path: 'kayit', count: 5 },
-    { value: '#çırak', count: 2 },
+    // { value: '#kayit', path: 'kayit', count: 5 },
+    // { value: '#çırak', count: 2 },
 ];
 
 const LokalScreen = ({navigation}: any) => {
@@ -39,7 +39,7 @@ const LokalScreen = ({navigation}: any) => {
     });
   
     useEffect(() => {
-    	opacity.value = withTiming(1, { duration: 2000, easing: Easing.out(Easing.ease) });
+    	opacity.value = withTiming(1, { duration: 1000, easing: Easing.out(Easing.exp)});
     }, []);
 
     const tagColor = useMemo<string>(

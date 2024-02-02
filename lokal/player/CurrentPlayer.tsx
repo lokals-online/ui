@@ -1,10 +1,8 @@
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Client, Stomp } from "@stomp/stompjs";
 import axios from "axios";
-import React, { createContext, useContext, useEffect, useState } from "react";
-import { ImageBackground, Pressable, View } from "react-native";
+import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
 import SockJS from "sockjs-client";
-import { LokalFetchingState, LokalSquare, LokalText } from "../common/LokalCommons";
+import { chirakRegistrationApi } from "../chirak/chirakApi/chirakRegistrationApi";
 import {
     AUTHORIZATION_HEADER_NAME,
     LOKAL_API_HOST,
@@ -12,8 +10,8 @@ import {
     LOKAL_STATUS,
     X_LOKAL_USER_HEADER_NAME
 } from "../common/LokalConstants";
-import { chirakRegistrationApi } from "../chirak/chirakApi/chirakRegistrationApi";
 import { storageRepository } from "../common/storageRepository";
+import { LokalsOnlineIntro } from '../screens/Intro';
 
 const CURRENT_PLAYER = '@CurrentPlayer';
 
@@ -29,7 +27,7 @@ export interface PlayerSettings {
     selfColor: string
     opponentColor: string;
 }
-export const defaultSettings = {selfColor: 'white',opponentColor: LOKAL_COLORS.OFFLINE} as PlayerSettings;
+export const defaultSettings = {selfColor: LOKAL_COLORS.WHITE, opponentColor: LOKAL_COLORS.OFFLINE} as PlayerSettings;
 
 interface CurrentPlayerContext {
     player: CurrentPlayer;
@@ -48,7 +46,7 @@ export const usePlayer = () => {
     return useContext(CurrentPlayerContext);
 }
 
-export const CurrentPlayerProvider = ({children}: any) => {
+export const CurrentPlayerProvider = ({assetsLoaded, children}: any) => {
 
     const [currentPlayer, setCurrentPlayer] = useState<CurrentPlayer>();
     const [status, setStatus] = useState<string>(LOKAL_STATUS.ONLINE);
@@ -204,12 +202,17 @@ export const CurrentPlayerProvider = ({children}: any) => {
         reload: reload
     }
 
-    if (!currentPlayer || !lokalSocketClient) {
-        return <View style={{flex: 1, height: '100%', width: '100%', justifyContent: 'center', alignItems: 'center'}}>
-            <Pressable onPress={() => reload()}>
-                <LokalFetchingState />
-            </Pressable>
-        </View>
-    }
-    else return <CurrentPlayerContext.Provider value={value}>{children}</CurrentPlayerContext.Provider>
+    const initialized = useMemo(() => (!currentPlayer || !lokalSocketClient || !assetsLoaded), [assetsLoaded, currentPlayer, lokalSocketClient]);
+    const [animationEnded, setAnimationEnded] = useState(false);
+    
+    useEffect(() => {
+        if (initialized) {
+            setTimeout(() => {return setAnimationEnded(true)}, 2000);
+        }
+    }, [initialized]);
+
+    return <CurrentPlayerContext.Provider value={value}>
+        {!animationEnded && <LokalsOnlineIntro initialized={initialized} />}
+        {animationEnded && children}
+    </CurrentPlayerContext.Provider>
 }

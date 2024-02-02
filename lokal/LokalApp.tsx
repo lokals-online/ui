@@ -23,7 +23,7 @@ export const LokalApp = () => {
             screens: {
                 intro: 'intro',
                 lokal: 'lokal',
-                kayit: 'kayit',
+                // kayit: 'kayit',
                 tavla: 'tavla/:sessionId?',
                 pishti: 'pishti/:sessionId?',
                 batak: 'batak/:sessionId?',
@@ -32,29 +32,26 @@ export const LokalApp = () => {
     };
 
     return <>
-        <StatusBar />
-        <CurrentPlayerProvider>
-            <NavigationContainer 
-                linking={linking} 
-                fallback={<LokalFetchingState />}
-                theme={{dark: true, colors: {background: 'transparent', text: '#fff'}} as Theme}
-            >
-                <Stack.Navigator 
-                    initialRouteName='lokal'
-                    screenOptions={{
-                        headerTitle: (props) => <LokalsOnlineBar /> ,
-                        headerStyle: {backgroundColor: 'transparent'},
-                        headerTitleStyle: {fontWeight: 'bold'},
-                        headerTitleAlign: 'center'
-                    }
-                }>
-                    <Stack.Screen name="tavla" component={BackgammonScreen} />
-                    <Stack.Screen name="batak" component={BatakScreen} />
-                    <Stack.Screen name="pishti" component={Pishti2Screen} />
-                    <Stack.Screen name="lokal" component={LokalScreen} />
-                    <Stack.Screen name="kayit" component={RegistrationScreen} />
-                </Stack.Navigator>
-            </NavigationContainer>
-        </CurrentPlayerProvider>
+        <NavigationContainer 
+            linking={linking} 
+            fallback={<LokalFetchingState />}
+            theme={{dark: true, colors: {background: 'transparent', text: '#fff'}} as Theme}
+        >
+            <Stack.Navigator 
+                initialRouteName='lokal'
+                screenOptions={{
+                    headerTitle: (props) => <LokalsOnlineBar /> ,
+                    headerStyle: {backgroundColor: 'transparent'},
+                    headerTitleStyle: {fontWeight: 'bold'},
+                    headerTitleAlign: 'center'
+                }
+            }>
+                <Stack.Screen name="lokal" component={LokalScreen} />
+                <Stack.Screen name="tavla" component={BackgammonScreen} />
+                <Stack.Screen name="batak" component={BatakScreen} />
+                <Stack.Screen name="pishti" component={Pishti2Screen} />
+                {/* <Stack.Screen name="kayit" component={RegistrationScreen} /> */}
+            </Stack.Navigator>
+        </NavigationContainer>
     </>
 }

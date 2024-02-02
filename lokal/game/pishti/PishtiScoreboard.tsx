@@ -8,7 +8,7 @@ import { usePishti } from "./PishtiProvider";
 import { usePishtiSession } from "./PishtiSessionProvider";
 
 export const PishtiScoreboard = () => {
-    const {player, socketClient} = usePlayer();
+    const {player} = usePlayer();
     const {session} = usePishtiSession();
     const {pishti} = usePishti();
 

@@ -1,12 +1,11 @@
-import { Pressable, View, StyleSheet, Modal, TextInput } from "react-native";
-import { LokalSquare, LokalText } from "../../common/LokalCommons";
-import { INNER_WIDTH, LOKAL_COLORS } from "../../common/LokalConstants";
+import { useMemo } from "react";
+import { View } from "react-native";
+import { LokalText } from "../../common/LokalCommons";
+import { LOKAL_COLORS } from "../../common/LokalConstants";
 import { usePlayer } from "../../player/CurrentPlayer";
-import { Backgammon, BackgammonPlayer, BackgammonSettings } from "./backgammonUtil";
-import { useBackgammonSession } from "./BackgammonSessionProvider";
-import { useEffect, useMemo, useState } from "react";
-import { BlurView } from "expo-blur";
 import { CurrentPlayerProfile, OpponentProfile, Player } from "../../player/Player";
+import { useBackgammonSession } from "./BackgammonSessionProvider";
+import { BackgammonPlayer, BackgammonSettings } from "./backgammonUtil";
 
 interface ScoreboardProps {
     home?: BackgammonPlayer;
@@ -37,12 +36,16 @@ export const BackgammonScoreboard = ({}: any) => {
                 </>}
             </View>
             <View style={{flex: 1, justifyContent: 'center', alignContent: 'center', alignItems: 'center'}}>
-                {session?.away?.id === player?.id && <CurrentPlayerProfile />}
-                {session?.away?.id !== player?.id && <OpponentProfile opponent={session?.away as Player} />}
-                
-                <LokalText style={{fontSize: 40, color: awayColor}}>
-                    {session?.away?.score  || 0}
-                </LokalText>
+                {!session?.away && <LokalText style={{fontSize: 40, color: awayColor}}>?</LokalText>}
+
+                {session?.away && <>
+                    {session?.away?.id === player?.id && <CurrentPlayerProfile />}
+                    {session?.away?.id !== player?.id && <OpponentProfile opponent={session?.away as Player} />}
+                    
+                    <LokalText style={{fontSize: 40, color: awayColor}}>
+                        {session?.away?.score  || 0}
+                    </LokalText>
+                </>}
             </View>
         </View>
     );

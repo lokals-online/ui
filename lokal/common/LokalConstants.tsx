@@ -34,7 +34,7 @@ export const LOKAL_GAMES = {
     PISHTI: {
         key: 'pishti',
         url: 'pishti',
-        name: 'pişti',
+        name: 'pishti',
         type: '52'
     },
     BATAK: {
@@ -52,20 +52,43 @@ export const LOKAL_STATUS = {
 }
 
 export const LOKAL_COLORS = {
-    WHITE: '#fff',
-    ONLINE: '#008000',
-    ONLINE_FADED: '#2D492DFF',
-    OFFLINE: '#717171',
-    WARNING: '#dd7409ff',
-    WARNING_FADED: '#dd7409aa',
-    ERROR: '#9f4444',
-    NOT_AVAILABLE: '#9f4444',
-    JOYSTICK_ACTIVE: '#008000',
-    ACCEPT: '#2fd416',
-    DECLINE: '#f95e5e',
+    ONLINE: '#008545',
+    ONLINE_FADED: '#004925',
+    WARNING: '#D17818',
+    WARNING_FADED: '#7A4619',
+    OFFLINE: '#787878',
+    WHITE: '#C8C8C8',
 
-    SELECTED_OPTION: '#ebf7eb',
+    CARD_RED: '#d05315',
+    CARD_BLACK: '#787878',
+
+    ACCEPT: '#2fd416',
+    DECLINE: '#f95e5e'
 }
+
+// OFFLINE: '#C8C8C8',
+
+// WHITE: '#fff',
+// ONLINE: '#008000',
+// ONLINE_FADED: '#2D492DFF',
+// OFFLINE: '#787878',
+// WARNING: '#dd7409ff',
+// WARNING_FADED: '#dd7409aa',
+// ERROR: '#9f4444',
+// NOT_AVAILABLE: '#9f4444',
+// JOYSTICK_ACTIVE: '#008000',
+// ACCEPT: '#2fd416',
+// DECLINE: '#f95e5e',
+// SELECTED_OPTION: '#ebf7eb',
+
+// 008545 yeşil
+// 004925 koyu yeşil (faded)
+// D17818 turuncu
+// 7A4619 turuncu faded
+// 00FF00 accept
+// FF0000 decline
+// C8C8C8 gri
+// 787878 koyu gri
 
 // move to settings
 axios.defaults.headers.common['Content-Type'] = 'application/json';

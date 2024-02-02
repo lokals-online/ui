@@ -14,7 +14,7 @@ export const LokalLoadingComponent = ({}: any) => {
 }
 
 export const LokalText = ({children, style, numberOfLines}: any) => {
-    return (<Text numberOfLines={numberOfLines} style={[{fontFamily: 'EuropeanTeletext', fontSize: LOKAL_DEFAULT_FONT_SIZE, color: 'white'}, style]}>{children}</Text>);
+    return (<Text numberOfLines={numberOfLines} style={[{fontFamily: 'EuropeanTeletext', fontSize: LOKAL_DEFAULT_FONT_SIZE, color: LOKAL_COLORS.WHITE}, style]}>{children}</Text>);
 };
 
 export const LokalTextBlink = ({intervalInMs, children, style}: any) => {
@@ -131,7 +131,7 @@ export const LokalSuit = ({type, size, color}:any) => {
         default: return '' //<LokalText style={{color: 'black'}}>&#9632;</LokalText>
     }
 }
-export const LokalSpade = ({size, color}:any) => <MaterialCommunityIcons name="cards-spade" size={size} color={color || 'white'} />
-export const LokalClub = ({size, color}:any) => <MaterialCommunityIcons name="cards-club" size={size} color={color || 'white'} />
-export const LokalHeart = ({size, color}:any) => <MaterialCommunityIcons name="cards-heart" size={size} color={color || 'white'} />
-export const LokalDiamond = ({size, color}:any) => <MaterialCommunityIcons name="cards-diamond" size={size} color={color || 'white'} />
+export const LokalSpade = ({size, color}:any) => <MaterialCommunityIcons name="cards-spade" size={size} color={color || LOKAL_COLORS.WHITE} />
+export const LokalClub = ({size, color}:any) => <MaterialCommunityIcons name="cards-club" size={size} color={color || LOKAL_COLORS.WHITE} />
+export const LokalHeart = ({size, color}:any) => <MaterialCommunityIcons name="cards-heart" size={size} color={color || LOKAL_COLORS.WHITE} />
+export const LokalDiamond = ({size, color}:any) => <MaterialCommunityIcons name="cards-diamond" size={size} color={color || LOKAL_COLORS.WHITE} />

@@ -1,32 +1,37 @@
-import { useEffect, useState } from "react";
-import { Pressable, View } from "react-native";
-import Animated, { Easing, FadeIn, FadeOut, FadeOutLeft, Layout, LightSpeedOutLeft, SlideInLeft, SlideInRight, useAnimatedStyle, useSharedValue, withDelay, withRepeat, withTiming } from "react-native-reanimated";
-import { LokalText } from "../common/LokalCommons";
+import { useEffect } from "react";
+import { View } from "react-native";
+import Animated, { Easing, FadeOut, Layout, SlideInLeft, useAnimatedStyle, useSharedValue, withDelay, withRepeat, withSequence, withTiming } from "react-native-reanimated";
 import { LOKAL_COLORS } from "../common/LokalConstants";
 
 const INTRO_FONT_SIZE = 20;
+const ANIMATION_DELAY = 1000;
+const ANIMATION_DURATION = 500;
+
 export const LokalsOnlineIntro = ({initialized}: any) => {
     
     const squareBlinkProgress = useSharedValue(1);
-    const squareBlinkStyle = useAnimatedStyle(() => {
-        return {opacity: squareBlinkProgress.value}
+    const squareFontSizeProgress = useSharedValue(INTRO_FONT_SIZE);
+    
+    const squareStyle = useAnimatedStyle(() => {
+        return {
+          opacity: squareBlinkProgress.value,
+          fontSize: squareFontSizeProgress.value
+        }
     });
 
-    useEffect(() => {
-        squareBlinkProgress.value = withRepeat(withTiming(0.6, {duration: 200}), (initialized ? 1 : -1), true);
-    }, [initialized]);
+	squareBlinkProgress.value = withRepeat(withTiming(0.6, {duration: 200}), (-1), true);
 
     return <View style={{backgroundColor: '#000', flex: 1, width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center'}}>
-        <View style={{flexDirection: 'row', justifyContent: 'center'}}>
+        <Animated.View style={{flexDirection: 'row', justifyContent: 'center'}}>
             <Lokals />
             
             <Animated.Text style={[
-				{fontFamily: 'EuropeanTeletext', fontSize: INTRO_FONT_SIZE, color: LOKAL_COLORS.ONLINE}, 
-				squareBlinkStyle
-			]}>&#9632;</Animated.Text>
+              {fontFamily: 'EuropeanTeletext', color: LOKAL_COLORS.ONLINE}, 
+              squareStyle
+            ]}>&#9632;</Animated.Text>
             
             <Online />
-        </View>
+        </Animated.View>
     </View>
 }
 
@@ -36,15 +41,15 @@ const Lokals = () => {
   
     // Animated styles
     const animatedStyles = useAnimatedStyle(() => {
-		return {
-			opacity: opacity.value,
-			transform: [{ translateX: translateX.value }],
-		};
+      return {
+        opacity: opacity.value,
+        transform: [{ translateX: translateX.value }],
+      };
     });
   
     useEffect(() => {
-    	opacity.value = withDelay(500, withTiming(1, { duration: 500, easing: Easing.out(Easing.exp) }));
-    	translateX.value = withDelay(500, withTiming(0, { duration: 500, easing: Easing.out(Easing.exp) }));
+    	opacity.value = withDelay(ANIMATION_DELAY, withTiming(1, { duration: ANIMATION_DURATION, easing: Easing.out(Easing.exp) }));
+    	translateX.value = withDelay(ANIMATION_DELAY, withTiming(0, { duration: ANIMATION_DURATION, easing: Easing.out(Easing.exp) }));
     }, []);
 
 
@@ -68,8 +73,8 @@ const Online = () => {
     });
   
     useEffect(() => {
-      opacity.value = withDelay(1000, withTiming(1, { duration: 500, easing: Easing.out(Easing.exp) }));
-      translateX.value = withDelay(1000, withTiming(0, { duration: 500, easing: Easing.out(Easing.exp) }));
+      opacity.value = withDelay(ANIMATION_DELAY, withTiming(1, { duration: ANIMATION_DURATION, easing: Easing.out(Easing.exp) }));
+      translateX.value = withDelay(ANIMATION_DELAY, withTiming(0, { duration: ANIMATION_DURATION, easing: Easing.out(Easing.exp) }));
     }, []);
 
 

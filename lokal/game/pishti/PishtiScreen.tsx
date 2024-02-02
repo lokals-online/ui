@@ -36,12 +36,11 @@ export const Pishti2Screen = ({route, navigation}: any) => {
                         height: lokalHeight/2,
                         backgroundColor: (status === LOKAL_STATUS.ONLINE) ? LOKAL_COLORS.ONLINE : LOKAL_COLORS.OFFLINE
                     }]}>
-                        {!qrVisible && <PishtiComponent />}
-                        {qrVisible && sessionId && <TableQr url={Linking.createURL(`/pishti/${sessionId}`)} />}
+                        <PishtiComponent />
                     </View>
                     
                     <View style={[style.joystick, {height: lokalHeight/4}]}>
-                        <PishtiJoystick toggleQr={() => setQrVisible(!qrVisible)} />
+                        <PishtiJoystick />
                     </View>
                 </PishtiProvider>
             </PishtiSessionProvider>

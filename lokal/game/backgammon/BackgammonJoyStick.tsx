@@ -13,7 +13,7 @@ import { useNavigation } from "@react-navigation/native";
 import { CHIRAK_PLAYER } from "../../player/Player";
 import { BasKonus, PlaySound } from "../../common/BasKonus";
 
-export const BackgammonJoystick = ({toggleQr}) => {
+export const BackgammonJoystick = () => {
 
     const navigation = useNavigation();
     
@@ -27,11 +27,11 @@ export const BackgammonJoystick = ({toggleQr}) => {
         <View style={joystickStyles.box}>
             <View style={{width: '100%', flexDirection: 'row', flex:3}}>
                 <View style={joystickStyles.joyStickButton}>
-                    {session && (session?.status !== 'INITIAL' && session?.status !== 'STARTED') && 
+                    {/* {session && (session?.status !== 'INITIAL' && session?.status !== 'STARTED') && 
                         <Pressable onPress={toggleQr}>
                             <MaterialCommunityIcons name="qrcode-scan" size={24} color={LOKAL_COLORS.OFFLINE} />
                         </Pressable>
-                    }
+                    } */}
                     {session && session?.status === 'STARTED' && 
                         <Pressable onPress={() => navigation.navigate('tavla', {sessionId: session?.id})}>
                             <MaterialCommunityIcons name="refresh" size={40} color={LOKAL_COLORS.OFFLINE} />

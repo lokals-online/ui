@@ -1,3 +1,4 @@
+import * as Linking from "expo-linking";
 import { useNavigation } from "@react-navigation/native";
 import React, { useMemo } from "react";
 import { Pressable, View } from "react-native";
@@ -9,6 +10,7 @@ import { useBackgammonSession } from "./BackgammonSessionProvider";
 import styles from "./backgammonStyles";
 import { BoardView, DiceComponent } from "./board/view/BoardView";
 import { BackgammonFormComponent } from "./BackgammonForm";
+import { TableQr } from "../../masa/TableQr";
 
 interface BackgammonProps {
     sessionId: string;
@@ -29,6 +31,9 @@ const BackgammonGamePlayComponent = ({setQrVisible}: any) => {
         ]}>
             {
                 (session?.status === 'INITIAL') && <BackgammonFormComponent />
+            }
+            {
+                (session?.status === 'WAITING_OPPONENT') && <TableQr url={Linking.createURL(`/tavla/${session?.id}`)} />
             }
             {
                 (session?.status === 'WAITING') && <View style={{flexDirection: 'row', width: '100%', justifyContent: 'space-evenly', alignContent: 'space-around'}}>

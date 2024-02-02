@@ -193,7 +193,7 @@ export const BasKonus = () => {
     return (
         <GestureHandlerRootView>
             <GestureDetector gesture={longPress}>
-                <Animated.Text style={[{fontFamily: 'EuropeanTeletext', color: LOKAL_COLORS.NOT_AVAILABLE}, blinkStyle]}>[bas konus]</Animated.Text>
+                <Animated.Text style={[{fontFamily: 'EuropeanTeletext', color: LOKAL_COLORS.DECLINE}, blinkStyle]}>[bas konus]</Animated.Text>
             </GestureDetector>
         </GestureHandlerRootView>
     );

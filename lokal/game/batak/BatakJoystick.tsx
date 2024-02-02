@@ -11,7 +11,7 @@ import { BatakPlayer } from "./batakUtil";
 import { useBatak } from "./BatakProvider";
 import { useNavigation } from "@react-navigation/native";
 
-export const BatakJoystick = ({toggleQr}) => {
+export const BatakJoystick = () => {
 
     const navigation = useNavigation();
     const {player} = usePlayer();
@@ -31,11 +31,6 @@ export const BatakJoystick = ({toggleQr}) => {
         <View style={joystickStyles.box}>
             <View style={{width: '100%', flexDirection: 'row', flex:3}}>
                 <View style={joystickStyles.joyStickButton}>
-                    {/* {qrAvailable && 
-                        <Pressable onPress={toggleQr}>
-                            <MaterialCommunityIcons name="qrcode-scan" size={24} color={LOKAL_COLORS.OFFLINE} />
-                        </Pressable>
-                    } */}
                     {batakId && <Pressable onPress={() => navigation.navigate('batak', {sessionId: sessionId})}>
                         <MaterialCommunityIcons name="refresh" size={40} color={LOKAL_COLORS.OFFLINE} />
                     </Pressable>}

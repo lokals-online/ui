@@ -51,9 +51,9 @@ export const BackgammonFormComponent = () => {
                 }
             </View>
         </View>
-        <View style={{width: '100%', height: '50%', justifyContent: 'space-evenly'}}>
+        <View style={{width: '100%', height: '50%', justifyContent: 'space-evenly', alignItems: 'center'}}>
             <View style={{width: '100%'}}><LokalText>rakip: </LokalText></View>
-            <View style={{width: '100%', flexDirection: 'row', justifyContent: 'space-between', flexWrap: 'wrap'}}>
+            <View style={{width: '100%', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap'}}>
                 {[CHIRAK_PLAYER, {id: "QR", username: "QR"}].map((opp: any) => 
                     <Pressable 
                         key={`opponent-${opp.id}`} 
@@ -77,67 +77,12 @@ export const BackgammonFormComponent = () => {
         </View>
     </View>
 
-    // return <View style={{height: '100%', justifyContent: 'space-evenly', alignContent: 'space-around'}}>
-    //     <View style={{width: '100%'}}>
-    //         {!raceToVisible && 
-    //             <Pressable onPress={() => setRaceToVisible(!raceToVisible)} style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
-    //                 <Animated.View style={[{}, raceToAnimation]}>
-    //                     <LokalText style={{fontSize: 24}}>[{session?.settings?.raceTo}]</LokalText>
-    //                 </Animated.View> 
-    //                 <LokalText>yapan kazanır</LokalText>
-    //             </Pressable>
-    //         }
-            
-    //         {raceToVisible && <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-    //             {Array.from({ length: 5}, (_, index) =>
-    //                 <Pressable 
-    //                     key={`${index}-raceTo`} 
-    //                     // style={{borderWidth: 1, borderColor: 'red'}}
-    //                     onPress={() => {
-    //                         updateSessionSettings({raceTo: index+1});
-    //                         setRaceToVisible(false);
-    //                     }}>
-    //                         <LokalText style={(session?.settings?.raceTo == (index+1)) ? 
-    //                             backgammonFormStyle.raceToItemSelected : backgammonFormStyle.raceToItem
-    //                         }>{index+1}</LokalText>
-    //                     </Pressable>
-    //                 )
-    //             }
-    //         </View>}
-    //     </View>
-    //     <View style={{width: '100%'}}>
-    //         {!opponentVisible && 
-    //             <Pressable onPress={() => setOpponentVisible(!opponentVisible)} style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
-    //                 <LokalText>rakip: </LokalText>
-    //                 <Animated.View style={[{}, raceToAnimation]}>
-    //                     <LokalText style={{fontSize: 24}}>[{opponent}]</LokalText>
-    //                 </Animated.View> 
-    //             </Pressable>
-    //         }
-
-    //         {opponentVisible && <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-    //             {[CHIRAK_PLAYER, {id: "QR", username: "QR"}].map((opp: any) => 
-    //                 <Pressable 
-    //                     key={`opponent-${opp.id}`} 
-    //                     onPress={() => {
-    //                         setOpponent(opp.id);
-    //                         setOpponentVisible(false);
-    //                     }}>
-    //                     <LokalText style={(opponent === opp.id) ? 
-    //                             backgammonFormStyle.opponentItemSelected : backgammonFormStyle.opponentItem
-    //                         }>{opp.username}</LokalText>
-    //                 </Pressable>
-    //             )}
-    //         </View>}
-    //     </View>
-    // </View>
-
 }
 
 export const lokalFormStyle = StyleSheet.create({
     raceToItem: {fontSize: 40, color: LOKAL_COLORS.ONLINE_FADED},
-    raceToItemSelected: {fontSize: 40, color: LOKAL_COLORS.SELECTED_OPTION},
+    raceToItemSelected: {fontSize: 40, color: LOKAL_COLORS.WHITE},
     opponentItem: {fontSize: 24, color: LOKAL_COLORS.ONLINE_FADED},
-    opponentItemSelected: {fontSize: 40, color: LOKAL_COLORS.SELECTED_OPTION},
+    opponentItemSelected: {fontSize: 40, color: LOKAL_COLORS.WHITE},
     opponentLokal: {fontSize: 24, color: LOKAL_COLORS.OFFLINE}
 });
