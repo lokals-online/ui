@@ -1,10 +1,10 @@
 import { useNavigation } from "@react-navigation/native";
-import { usePlayer } from "../../player/CurrentPlayer";
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
-import { BackgammonSession } from "../backgammon/backgammonUtil";
-import { Pishti, PishtiPlayer, PishtiSession, PishtiSettings } from "./pishtiUtil";
-import { CHIRAK_PLAYER } from "../../player/Player";
 import { pishtiApi } from "../../chirak/chirakApi/game/pishtiApi";
+import { LokalFetchingState } from "../../common/LokalCommons";
+import { usePlayer } from "../../player/CurrentPlayer";
+import { CHIRAK_PLAYER } from "../../player/Player";
+import { PishtiPlayer, PishtiSession, PishtiSettings } from "./pishtiUtil";
 
 export interface PishtiSessionContext {
     session: PishtiSession;
@@ -28,15 +28,9 @@ export const PishtiSessionProvider = ({sessionId, children}: any) => {
     const [reload, setReload] = useState<boolean>(false);
     const [pishtiSession, setPishtiSession] = useState<PishtiSession>();
     
-    const home = useMemo<PishtiPlayer>(() => {
-        return pishtiSession?.home || {...player, score: 0} as PishtiPlayer;
-    }, [pishtiSession]);
-    // const away = useMemo<PishtiPlayer>(() => {
-    //     return pishtiSession?.away || {...CHIRAK_PLAYER, score: 0} as PishtiPlayer;
-    // }, [pishtiSession]);
     const status = useMemo<string>(() => (pishtiSession?.status || "INITIAL"), [pishtiSession]);
     
-    const [settings, setSettings] = useState<PishtiSettings>(() => (pishtiSession?.settings || {raceTo: 2}));
+    const [settings, setSettings] = useState<PishtiSettings>({raceTo: 2});
     const [opponent, setOpponent] = useState<string>(CHIRAK_PLAYER.id);
 
     useEffect(() => {
@@ -55,30 +49,6 @@ export const PishtiSessionProvider = ({sessionId, children}: any) => {
 
         socketClient?.subscribe(`/topic/session/pishti/${sessionId}`, (message: any) => {
             const sessionEvent = JSON.parse(message.body);
-
-            console.debug("pishti session event!", sessionEvent);
-
-            if (sessionEvent['type'] === 'SIT') {
-                console.debug("SIT", sessionEvent);
-
-                // setPishtiSession(sessionEvent['pishtiSession']);
-            }
-            else if (sessionEvent['type'] === 'QUIT') {
-                console.debug("QUIT", sessionEvent);
-
-                // setPishtiSession(sessionEvent['pishtiSession']);
-            }
-            else if (sessionEvent['type'] === 'START') {
-                console.debug("START", sessionEvent);
-                console.debug("game is starting in 1sec....")
-                
-                setTimeout(() => {
-                    dataFetch();
-                }, 1000);
-            }
-            else if (sessionEvent['type'] === 'END') {
-                console.debug("ENDED", sessionEvent);
-            }
             dataFetch();
         });
 
@@ -122,11 +92,11 @@ export const PishtiSessionProvider = ({sessionId, children}: any) => {
 
     const value = {
         session: {
-            id: pishtiSession ? pishtiSession.id : sessionId,
-            home: home,
+            id: pishtiSession?.id || 'new',
+            home: pishtiSession?.home || player,
             away: pishtiSession?.away,
-            status: status,
-            settings: settings,
+            status: pishtiSession?.status || 'INITIAL',
+            settings: pishtiSession?.settings || settings,
             currentMatchId: pishtiSession?.currentMatchId,
             matches: pishtiSession?.matches
         },
@@ -138,7 +108,10 @@ export const PishtiSessionProvider = ({sessionId, children}: any) => {
         updateSessionSettings: updateSessionSettings,
     } as PishtiSessionContext;
 
-    return <PishtiSessionContext.Provider value={value}>
+    if (sessionId && !pishtiSession?.id) {
+        return <LokalFetchingState />
+    }
+    else return <PishtiSessionContext.Provider value={value}>
         {children}
     </PishtiSessionContext.Provider>;
 }

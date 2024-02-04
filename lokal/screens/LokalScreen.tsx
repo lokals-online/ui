@@ -18,7 +18,7 @@ export interface MenuItem {
     // onSelect: () => void;
 }
 const DEFAULT_MENU = [
-    { value: '#lokal', count: 5 },
+    // { value: '#lokal', count: 5 },
     { value: "#" + LOKAL_GAMES.BACKGAMMON.name, path: LOKAL_GAMES.BACKGAMMON.url, count: 10 },
     { value: "#" + LOKAL_GAMES.BATAK.name, path: LOKAL_GAMES.BATAK.url, count: 10 },
     { value: "#" + LOKAL_GAMES.PISHTI.name, path: LOKAL_GAMES.PISHTI.url, count: 10 },

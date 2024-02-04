@@ -187,7 +187,6 @@ export const CurrentPlayerProvider = ({assetsLoaded, children}: any) => {
     const reload = () => {
         storageRepository.removeValue(CURRENT_PLAYER);
 
-        console.debug("refreshing...");
         loadPlayer();
     }
 
@@ -202,11 +201,7 @@ export const CurrentPlayerProvider = ({assetsLoaded, children}: any) => {
         reload: reload
     }
 
-    const initialized = useMemo(() => {
-        console.log("initialized...", (currentPlayer?.id && lokalSocketClient?.active && assetsLoaded));
-
-        return (currentPlayer?.id && lokalSocketClient?.active && assetsLoaded);
-    }, [assetsLoaded, currentPlayer, lokalSocketClient]);
+    const initialized = useMemo(() => (currentPlayer?.id && lokalSocketClient?.active && assetsLoaded), [assetsLoaded, currentPlayer, lokalSocketClient]);
     const [animationEnded, setAnimationEnded] = useState(false);
     
     useEffect(() => {

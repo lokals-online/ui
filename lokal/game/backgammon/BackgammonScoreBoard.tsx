@@ -6,6 +6,7 @@ import { usePlayer } from "../../player/CurrentPlayer";
 import { CurrentPlayerProfile, OpponentProfile, Player } from "../../player/Player";
 import { useBackgammonSession } from "./BackgammonSessionProvider";
 import { BackgammonPlayer, BackgammonSettings } from "./backgammonUtil";
+import { useBackgammon } from "./BackgammonProvider";
 
 interface ScoreboardProps {
     home?: BackgammonPlayer;

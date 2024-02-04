@@ -29,28 +29,28 @@ const BackgammonGamePlayComponent = ({setQrVisible}: any) => {
         <View style={[styles.backgammon, 
             {backgroundColor: (status === LOKAL_STATUS.ONLINE) ? LOKAL_COLORS.ONLINE : LOKAL_COLORS.OFFLINE}
         ]}>
-            {
-                (session?.status === 'INITIAL') && <BackgammonFormComponent />
-            }
-            {
-                (session?.status === 'WAITING_OPPONENT') && <TableQr url={Linking.createURL(`/tavla/${session?.id}`)} />
-            }
-            {
-                (session?.status === 'WAITING') && <View style={{flexDirection: 'row', width: '100%', justifyContent: 'space-evenly', alignContent: 'space-around'}}>
+            {(session?.status === 'INITIAL') && <BackgammonFormComponent />}
+            
+            {(session?.status === 'WAITING_OPPONENT') && <TableQr url={Linking.createURL(`/tavla/${session?.id}`)} />}
+            
+            {(session?.status === 'WAITING') && 
+                <View style={{flexDirection: 'row', width: '100%', justifyContent: 'space-evenly', alignContent: 'space-around'}}>
                     <DiceComponent value={session?.home.firstDie || '?'} color={session?.home.firstDie ? LOKAL_COLORS.WARNING : LOKAL_COLORS.WARNING_FADED} />
                     <DiceComponent value={session?.away?.firstDie || '?'} color={session?.away?.firstDie ? LOKAL_COLORS.WARNING : LOKAL_COLORS.WARNING_FADED} />
                 </View>
             }
-            {
-                (session?.status === 'ENDED') && <View style={{flexDirection: 'column', width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center'}}>
+            
+            {(session?.status === 'ENDED') && 
+                <View style={{flexDirection: 'column', width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center'}}>
                     <><LokalText>oyun bitti.</LokalText></>
                     <><LokalText style={{fontSize: 24}}>kazanan: [{(report?.winner === currentPlayer?.id) ? currentPlayer?.username : opponent?.username}]</LokalText></>
                     <Pressable onPress={() => navigation.reset({index: 0, routes: [{ name: 'lokal' }]})}><LokalText>[lokale dön]</LokalText></Pressable>
                 </View>
             }
-            {
-                (session?.status !== 'ENDED') && (report?.status === 'ENDED') && <View style={{flexDirection: 'row', width: '100%', justifyContent: 'space-evenly', alignContent: 'space-around'}}>
-                    <><LokalText>yeni oyun başlıyor.</LokalText></>
+            
+            {(session?.status !== 'ENDED') && (report?.status === 'ENDED') && 
+                <View style={{flexDirection: 'row', width: '100%', justifyContent: 'space-evenly', alignContent: 'space-around'}}>
+                    <LokalText>yeni oyun başlıyor.</LokalText>
                 </View>
             }
 

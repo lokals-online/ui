@@ -1,11 +1,9 @@
-import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { useNavigation } from "@react-navigation/native";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import { backgammonApi } from "../../chirak/chirakApi/game/backgammonApi";
+import { LokalFetchingState } from "../../common/LokalCommons";
 import { usePlayer } from "../../player/CurrentPlayer";
-import { CHIRAK_PLAYER } from "../../player/Player";
-import { storageRepository } from "../../common/storageRepository";
-import { Backgammon, BackgammonPlayer, BackgammonSession, BackgammonSettings } from "./backgammonUtil";
-import { useLinkTo, useNavigation } from "@react-navigation/native";
-import { Alert } from "react-native";
+import { BackgammonSession, BackgammonSettings } from "./backgammonUtil";
 
 const BACKGAMMON_SESSION_STATE = {
     INITIAL: "INITIAL",
@@ -31,24 +29,17 @@ export const useBackgammonSession = () => {
 const BackgammonSessionProvider = ({sessionId, children}: any) => {
 
     const navigation = useNavigation();
+
     const {player, socketClient} = usePlayer();
 
     const [reload, setReload] = useState<boolean>(false);
     const [backgammonSession, setBackgammonSession] = useState<BackgammonSession>();
     
-    const home = useMemo<BackgammonPlayer>(() => {
-        return backgammonSession?.home || {...player, score: 0, firstDie: 0} as BackgammonPlayer;
-    }, [backgammonSession]);
-    const away = useMemo<BackgammonPlayer>(() => {
-        return backgammonSession?.away;
-    }, [backgammonSession]);
-    const status = useMemo<string>(() => (backgammonSession?.status || "INITIAL"), [backgammonSession]);
-    
-    const [settings, setSettings] = useState<BackgammonSettings>(() => (backgammonSession?.settings || {raceTo: 2}));
-    const [opponent, setOpponent] = useState<string>(CHIRAK_PLAYER.id);
+    const [settings, setSettings] = useState<BackgammonSettings>({raceTo: 2});
+    const [opponent, setOpponent] = useState<string>("QR");
 
     useEffect(() => {
-        if (!sessionId || !socketClient.active || !socketClient) return;
+        if (!sessionId || !socketClient?.active) return;
 
         const dataFetch = async () => {
 
@@ -62,43 +53,13 @@ const BackgammonSessionProvider = ({sessionId, children}: any) => {
         dataFetch();
 
         const bgSessionSubscription = socketClient?.subscribe(`/topic/session/backgammon/${sessionId}`, (message: any) => {
-            // const sessionEvent = JSON.parse(message.body);
-
-            // if (sessionEvent['type'] === 'SIT') {
-            //     console.log("SIT", sessionEvent);
-
-            //     setBackgammonSession(sessionEvent['backgammonSession']);
-            // }
-            // else if (sessionEvent['type'] === 'QUIT') {
-            //     console.log("QUIT", sessionEvent);
-
-            //     setBackgammonSession(sessionEvent['backgammonSession']);
-            // }
-            // else if (sessionEvent['type'] === 'FIRST_DIE') {
-            //     console.log("FIRST_DIE", sessionEvent);
-
-            //     setBackgammonSession(sessionEvent['backgammonSession']);
-            // }
-            // else if (sessionEvent['type'] === 'START') {
-            //     console.log("START", sessionEvent);
-            //     console.log("game is starting in 1sec....")
-                
-            //     setTimeout(() => {
-            //         setBackgammonSession(sessionEvent['backgammonSession']);
-            //     }, 1000);
-            // }
-            // else if (sessionEvent['type'] === 'END') {
-            //     console.log("ENDED", sessionEvent);
-
-            //     setBackgammonSession(sessionEvent['backgammonSession']);
-            // }
             dataFetch();
         });
 
         return () => {
             bgSessionSubscription.unsubscribe();
         }
-    }, [sessionId, socketClient]);
+    }, [sessionId, socketClient, reload]);
 
     const createNewSession = async (): Promise<BackgammonSession> => {
         if (!opponent) return null;
@@ -139,10 +100,10 @@ const BackgammonSessionProvider = ({sessionId, children}: any) => {
     const value = {
         session: {
             id: backgammonSession?.id || 'new',
-            home: home,
-            away: away,
-            status: status,
-            settings: settings,
+            home: backgammonSession?.home || player,
+            away: backgammonSession?.away,
+            status: backgammonSession?.status || "INITIAL",
+            settings: backgammonSession?.settings || settings,
             currentMatch: backgammonSession?.currentMatch,
             matches: backgammonSession?.matches
         },
@@ -154,7 +115,10 @@ const BackgammonSessionProvider = ({sessionId, children}: any) => {
         updateSessionSettings: updateSessionSettings,
     } as BackgammonSessionContext;
 
-    return <BackgammonSessionContext.Provider value={value}>
+    if (sessionId && !backgammonSession?.id) {
+        return <LokalFetchingState />
+    }
+    else return <BackgammonSessionContext.Provider value={value}>
         {children}
     </BackgammonSessionContext.Provider>;
 }

@@ -1,17 +1,18 @@
-import * as Linking from "expo-linking";
 import { BlurView } from "expo-blur";
+import * as Linking from "expo-linking";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { StyleSheet, View } from "react-native";
+import Animated, { Easing, SlideInUp, cancelAnimation, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from "react-native-reanimated";
+import { pishtiApi } from "../../chirak/chirakApi/game/pishtiApi";
 import { LokalText, LokalTextBlink } from "../../common/LokalCommons";
 import { LOKAL_COLORS } from "../../common/LokalConstants";
-import { pishtiApi } from "../../chirak/chirakApi/game/pishtiApi";
-import { usePlayer } from "../../player/CurrentPlayer";
-import { CardComponent, ClosedCard } from "./Card";
-import { usePishtiSession } from "./PishtiSessionProvider";
-import { usePishti } from "./PishtiProvider";
-import { PishtiFormComponent } from "./PishtiFormComponent";
-import { Card } from "../card/Card";
 import { TableQr } from "../../masa/TableQr";
+import { usePlayer } from "../../player/CurrentPlayer";
+import { Card } from "../card/Card";
+import { CardAnimation, CardComponent, ClosedCard } from "./Card";
+import { PishtiFormComponent } from "./PishtiFormComponent";
+import { usePishti } from "./PishtiProvider";
+import { usePishtiSession } from "./PishtiSessionProvider";
 
 interface CardPlayedEvent {
     playerId: string;
@@ -27,7 +28,7 @@ interface CaptureEvent {
     playerId: string;
 }
 
-const PISHTI_TURN_INTERVAL = 1000;
+const PISHTI_TURN_INTERVAL = 500;
 const PishtiComponent = () => {
 
     const {player, socketClient} = usePlayer();
@@ -49,17 +50,27 @@ const PishtiComponent = () => {
 
     const isCurrentPlayerTurn = useMemo<boolean>(() => turn === player?.id, [player, pishti, turn]);
     const [playing, setPlaying] = useState<boolean>(false);
+    const [newRound, setNewRound] = useState<boolean>(false);
 
     useEffect(() => {
 
-        if (!pishti || !socketClient) return;
-
-        // console.log("PISHTI CHANGED...", {...pishti})
+        if (!pishti?.id || !socketClient) return;
 
         setStack(pishti?.stack);
         setHand(pishti?.hand);
         setOpponentHand(pishti?.opponent.hand);
         setTurn(pishti?.turn);
+
+        if (pishti?.remainingCardCount === 40) {
+            setNewRound(true);
+            setTimeout(() => {
+                setNewRound(false);
+            }, 2000);
+        }
+
+        const newRoundSubscription = socketClient?.subscribe(`/topic/game/pishti/${pishti.id}/newRound`, (message: any) => {
+            console.log("new Round:");
+        });
 
         const playedCardSubscription = socketClient?.subscribe(`/topic/game/pishti/${pishti.id}/cardPlayed`, (message: any) => {
             const cardPlayedEvent = JSON.parse(message.body) as CardPlayedEvent;
@@ -87,6 +98,7 @@ const PishtiComponent = () => {
         });
 
         return () => {
+            newRoundSubscription.unsubscribe();
             playedCardSubscription.unsubscribe();
             turnSubscription.unsubscribe();
             pishtiSubscription.unsubscribe();
@@ -133,85 +145,111 @@ const PishtiComponent = () => {
     }
     else return (
         <View style={style.pishti}>
-            
-            {(pishti?.turn === 'ENDED') && 
-                <BlurView intensity={40} tint="dark" style={{
-                    flex: 1, justifyContent: 'center', alignItems: 'center',
-                    zIndex:100, width:'100%', height: '100%', position: 'absolute', top: 0, left:0
-                }}>
-                    <LokalText>yeni oyun başlıyor...</LokalText>
-                </BlurView>
+            {newRound && 
+                // <View style={[style.stack]}>
+                    <View style={{height: '50%', aspectRatio: 1/1, overflow: 'hidden'}}>
+                        <Animated.View  style={{
+                            top: 0,
+                            left: 0,
+                            position: 'absolute',
+                            height: '80%',
+                            borderWidth: 1,
+                            borderColor: '#444'
+                        }}>
+                            <CardAnimation />
+                        </Animated.View>
+                </View>
+                // </View>
             }
-
-            {!isCurrentPlayerTurn && 
-                <LokalTextBlink intervalInMs={PISHTI_TURN_INTERVAL} 
-                    style={{
-                        position: 'absolute', 
-                        top: -10,
-                        left: 'center',
-                        width: 50, 
-                        heigth: 50, 
-                        justifyContent: 'flex-end',
-                        alignSelf: 'center',
-                        borderBottomWidth: 10,
-                        borderColor: LOKAL_COLORS.WARNING
+            {!newRound && <>
+        
+                {(pishti?.turn === 'ENDED') && 
+                    <BlurView intensity={40} tint="dark" style={{
+                        flex: 1, justifyContent: 'center', alignItems: 'center',
+                        zIndex:100, width:'100%', height: '100%', position: 'absolute', top: 0, left:0
                     }}>
-                </LokalTextBlink>
-            }
-            {/* CURRENT PLAYER INDICATOR LED! */}
-            {isCurrentPlayerTurn && 
-                <LokalTextBlink intervalInMs={PISHTI_TURN_INTERVAL} 
-                    style={{
-                        position: 'absolute', 
-                        bottom: -10, 
-                        left: 'center',
-                        width: 50, 
-                        heigth: 50, 
-                        justifyContent: 'flex-end',
-                        alignSelf: 'center',
-                        borderTopWidth: 10,
-                        borderColor: LOKAL_COLORS.WARNING
-                    }}>
-                </LokalTextBlink>
-            }
+                        <LokalText>yeni oyun başlıyor...</LokalText>
+                    </BlurView>
+                }
 
-            <View style={[style.opponent]}>
-                <View style={[style.opponentHand, ((pishti?.turn !== player.id) ? style.activeTurn : {})]}>
-                    {Array.from({ length: opponentHand || 0 }, (_, i) => <ClosedCard key={`oppHand${i}`} />)}
-                </View>
-            </View>
+                {!isCurrentPlayerTurn && 
+                    <LokalTextBlink intervalInMs={PISHTI_TURN_INTERVAL} 
+                        style={{
+                            position: 'absolute', 
+                            top: -10,
+                            left: 'center',
+                            width: 50, 
+                            heigth: 50, 
+                            justifyContent: 'flex-end',
+                            alignSelf: 'center',
+                            borderBottomWidth: 10,
+                            borderColor: LOKAL_COLORS.WARNING
+                        }}>
+                    </LokalTextBlink>
+                }
+                {/* CURRENT PLAYER INDICATOR LED! */}
+                {isCurrentPlayerTurn && 
+                    <LokalTextBlink intervalInMs={PISHTI_TURN_INTERVAL} 
+                        style={{
+                            position: 'absolute', 
+                            bottom: -10, 
+                            left: 'center',
+                            width: 50, 
+                            heigth: 50, 
+                            justifyContent: 'flex-end',
+                            alignSelf: 'center',
+                            borderTopWidth: 10,
+                            borderColor: LOKAL_COLORS.WARNING
+                        }}>
+                    </LokalTextBlink>
+                }
 
-            <View style={[style.stack]}>
-                <View style={{height: '50%', aspectRatio: 1/1}}>
-                    {stack?.map((card: Card, i: number) => 
-                        <View key={`stackCard${i}`} 
-                            style={{
-                                top: card.number,
-                                left: card.number,
-                                position: 'absolute',
-                                height: '80%',
-                                borderWidth: 1,
-                                borderColor: '#444'
-                            }}
-                        >
-                            <CardComponent number={card.number} type={card.type} />
-                        </View>
-                    )}
+                <View style={[style.opponent]}>
+                    <View style={[style.opponentHand, ((pishti?.turn !== player.id) ? style.activeTurn : {})]}>
+                        {Array.from({ length: opponentHand || 0 }, (_, i) => <ClosedCard key={`oppHand${i}`} />)}
+                    </View>
                 </View>
-            </View>
-            
-            <View style={[style.currentPlayer]}>
-                <View style={[style.currentPlayerHand, (isCurrentPlayerTurn ? style.activeTurn : {})]}>
-                    {hand?.map((card: Card, i: number) => 
-                        <CardComponent key={`playerHand${i}`} 
-                            number={card.number} 
-                            type={card.type} 
-                            onPress={() => {if (isCurrentPlayerTurn && !playing) playCard(card)}}
-                        />
-                    )}
-                </View>
-            </View>
 
+                <View style={[style.stack]}>
+                    <View style={{height: '50%', aspectRatio: 1/1, overflow: 'hidden'}}>
+                        {stack?.map((card: Card, i: number) => 
+                            <Animated.View 
+                                key={`stackCard${i}`} 
+                                entering={SlideInUp.duration(500).easing(Easing.ease)}
+                                style={{
+                                    top: card.number,
+                                    left: card.number,
+                                    position: 'absolute',
+                                    height: '80%',
+                                    borderWidth: 1,
+                                    borderColor: '#444'
+                                }}
+                            >
+                                <CardComponent number={card.number} type={card.type} />
+                            </Animated.View>
+                        )}
+                    </View>
+                </View>
+                
+                <View style={[style.currentPlayer]}>
+                    <View style={[style.currentPlayerHand, (isCurrentPlayerTurn ? style.activeTurn : {})]}>
+                        {hand?.map((card: Card, i: number) => 
+                            <Animated.View 
+                                key={`playerHand${i}`} 
+                                // entering={SlideInDown.duration(200).easing(Easing.inOut(Easing.exp))}
+                                // exiting={SlideInUp.duration(200).easing(Easing.inOut(Easing.exp))}
+                            >
+                                <CardComponent 
+                                    // key={`playerHand${i}`} 
+                                    number={card.number} 
+                                    type={card.type} 
+                                    onPress={() => {if (isCurrentPlayerTurn && !playing) playCard(card)}}
+                                />
+                            </Animated.View>
+                        )}
+                    </View>
+                </View>
+            </>}
         </View>
     )
 }

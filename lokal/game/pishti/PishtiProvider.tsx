@@ -23,7 +23,7 @@ export const PishtiProvider = ({children}: any) => {
     useEffect(() => {
         
         console.log(`PISHTI sessionId:[${session?.id}] id:[${session?.currentMatchId}] , playerId: [${player.id}]`);
-        if (!session?.id || !session?.currentMatchId || !player?.id || !socketClient) {
+        if (!session?.id || !session?.currentMatchId || !player?.id || !socketClient?.active) {
             return;
         }
 

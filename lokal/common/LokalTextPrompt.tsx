@@ -4,7 +4,7 @@ import { LokalText } from "./LokalCommons";
 const LokalTextPrompt = ({onEnd, text, style}: any) => {
     const [typedText, setTypedText] = useState("");
   
-    const interval = 30;
+    const interval = 50;
 
     const typingRender = (text, updater, interval) => {
         let localTypingIndex = 0;

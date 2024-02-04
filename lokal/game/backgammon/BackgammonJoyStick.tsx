@@ -19,7 +19,7 @@ export const BackgammonJoystick = () => {
     
     const {player} = usePlayer();
 
-    const {session, quitSession} = useBackgammonSession();
+    const {session, quitSession, reloadSession} = useBackgammonSession();
 
     const [quitSessionModal, setQuitSessionModal] = useState<boolean>(false);
 
@@ -33,7 +33,8 @@ export const BackgammonJoystick = () => {
                         </Pressable>
                     } */}
                     {session && session?.status === 'STARTED' && 
-                        <Pressable onPress={() => navigation.navigate('tavla', {sessionId: session?.id})}>
+                        // <Pressable onPress={() => navigation.navigate('tavla', {'sessionId': session?.id})}>
+                        <Pressable onPress={reloadSession}>
                             <MaterialCommunityIcons name="refresh" size={40} color={LOKAL_COLORS.OFFLINE} />
                         </Pressable>
                     }
@@ -93,7 +94,7 @@ const SessionButton = () => {
         <>
             {isOwner && <>
                 {session?.status === 'INITIAL' && 
-                    <Nipple onPress={() => newSession()} text={'başla'} />
+                    <Nipple onPress={() => newSession()} text={'basla'} />
                 }
                 {session?.status === 'WAITING' && (!session?.home?.firstDie) &&
                     <Nipple onPress={() => 
@@ -129,9 +130,9 @@ const SessionButton = () => {
 
 export const Nipple = ({onPress, disabled, text}: any) => {
     return <Pressable style={{flexDirection: 'row', alignItems: 'center'}} disabled={disabled} onPress={onPress}>
-        <LokalTextPrompt text={'['} style={{fontSize: 40}}></LokalTextPrompt>
-        <LokalTextPrompt text={text} style={{fontSize: 24}}></LokalTextPrompt>
-        <LokalTextPrompt text={']'} style={{fontSize: 40}}></LokalTextPrompt>
+        <LokalTextPrompt text={'['} style={{fontSize: 24}}></LokalTextPrompt>
+        <LokalTextPrompt text={text} style={{fontSize: 18}}></LokalTextPrompt>
+        <LokalTextPrompt text={']'} style={{fontSize: 24}}></LokalTextPrompt>
     </Pressable>
 }
 

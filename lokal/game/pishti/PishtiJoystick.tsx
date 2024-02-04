@@ -16,27 +16,24 @@ export const PishtiJoystick = () => {
 
     const {player} = usePlayer();
 
-    const {session, newSession, quitSession} = usePishtiSession();
-    const {pishti} = usePishti();
+    const {session, newSession, quitSession, reloadSession} = usePishtiSession();
 
     const [disabled, setDisabled] = useState<boolean>(false);
 
     const [quitSessionModal, setQuitSessionModal] = useState<boolean>(false);
 
-    // console.log("joyss.......", player, session?.home, session?.away)
-    // console.log("joyss.......", (player?.id !== session?.home?.id && player?.id !== session?.away?.id))
     return (
         <View style={joystickStyles.box}>
             <View style={{width: '100%', flexDirection: 'row', flex:3}}>
                 <View style={joystickStyles.joyStickButton}>
                     {session?.id && session?.status === 'STARTED' && 
-                        <Pressable onPress={() => navigation.navigate('pishti', {sessionId: session?.id})}>
+                        <Pressable onPress={reloadSession}>
                             <MaterialCommunityIcons name="refresh" size={40} color={LOKAL_COLORS.OFFLINE} />
                         </Pressable>
                     }
                 </View>
                 <View style={[joystickStyles.joyStickButton, {justifyContent: 'center',alignItems: 'center'}]}>
-                    {session?.status === 'INITIAL' && <Nipple text={'başla'} disabled={disabled} onPress={() => newSession()}></Nipple>}
+                    {session?.status === 'INITIAL' && <Nipple text={'basla'} disabled={disabled} onPress={newSession}></Nipple>}
 
                     {session?.status === 'WAITING' && 
                         player?.id !== session?.home?.id && player?.id !== session?.away?.id &&

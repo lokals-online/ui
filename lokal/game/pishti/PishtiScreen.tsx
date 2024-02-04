@@ -15,12 +15,10 @@ import PishtiSessionProvider from './PishtiSessionProvider';
 
 export const Pishti2Screen = ({route, navigation}: any) => {
 
-    const {player, status, socketClient} = usePlayer();
+    const {status} = usePlayer();
     
     const headerHeight = useHeaderHeight();
     const lokalHeight = useMemo(() => DEVICE_DIMENSIONS.height - headerHeight, [headerHeight]);
-
-    const [qrVisible, setQrVisible] = useState<boolean>(false);
 
     const sessionId = route?.params?.sessionId;
 

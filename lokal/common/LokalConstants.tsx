@@ -57,7 +57,7 @@ export const LOKAL_COLORS = {
     WARNING: '#D17818',
     WARNING_FADED: '#7A4619',
     OFFLINE: '#787878',
-    WHITE: '#C8C8C8',
+    WHITE: '#d4d4d4',
 
     CARD_RED: '#d05315',
     CARD_BLACK: '#787878',

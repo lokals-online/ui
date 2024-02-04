@@ -1,10 +1,9 @@
 import { useFonts } from "expo-font";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { StatusBar, StyleSheet, View } from "react-native";
 import applyGlobalPolyfills from "./globalPolyfills";
 import { LokalApp } from './lokal/LokalApp';
 import { INNER_WIDTH, LOKAL_COLORS } from './lokal/common/LokalConstants';
-import { LokalsOnlineIntro } from './lokal/screens/Intro';
 import { CurrentPlayerProvider } from "./lokal/player/CurrentPlayer";
 
 // workaround for the TextEncoder issue with stompjs.
@@ -18,8 +17,8 @@ export default function App() {
 
     useEffect(() => {
         if (fontLoaded) {
-            console.log("fontLoaded", fontLoaded);
-            setTimeout(() => setAssetsLoaded(true), 500);
+            // console.log("fontLoaded", fontLoaded);
+            setTimeout(() => setAssetsLoaded(true), 1000);
         }
     }, [fontLoaded]);
 

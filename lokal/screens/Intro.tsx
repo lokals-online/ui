@@ -2,13 +2,14 @@ import { useEffect } from "react";
 import { View } from "react-native";
 import Animated, { Easing, FadeOut, Layout, SlideInLeft, useAnimatedStyle, useSharedValue, withDelay, withRepeat, withSequence, withTiming } from "react-native-reanimated";
 import { LOKAL_COLORS } from "../common/LokalConstants";
+import { LokalSquare } from "../common/LokalCommons";
 
 const INTRO_FONT_SIZE = 20;
 export const INTRO_ANIMATION_DURATION = 1000;
 
 export const LokalsOnlineIntro = ({initialized}: any) => {
     
-    const squareBlinkProgress = useSharedValue(1);
+    const squareBlinkProgress = useSharedValue(0.8);
     
     const squareStyle = useAnimatedStyle(() => {
         return {
@@ -17,7 +18,12 @@ export const LokalsOnlineIntro = ({initialized}: any) => {
     });
 
     useEffect(() => {
-      squareBlinkProgress.value = withRepeat(withTiming(0.6, {duration: 200}), (initialized ? 1 : -1), true);
+      if (initialized) {
+        squareBlinkProgress.value = 1;
+      }
+      else {
+        squareBlinkProgress.value = withRepeat(withTiming(0.2, {duration: 200}), -1, true);
+      }
     }, [initialized])
 
     return <View style={{backgroundColor: '#000', flex: 1, width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center'}}>
@@ -47,8 +53,8 @@ const Lokals = () => {
     });
   
     useEffect(() => {
-    	opacity.value = withTiming(1, { duration: INTRO_ANIMATION_DURATION, easing: Easing.out(Easing.exp) });
-    	translateX.value = withTiming(0, { duration: INTRO_ANIMATION_DURATION, easing: Easing.out(Easing.exp) });
+    	opacity.value = withTiming(1, { duration: INTRO_ANIMATION_DURATION, easing: Easing.inOut(Easing.exp) });
+    	translateX.value = withTiming(0, { duration: INTRO_ANIMATION_DURATION, easing: Easing.inOut(Easing.exp) });
     	// opacity.value = withDelay(ANIMATION_DELAY, withTiming(1, { duration: ANIMATION_DURATION, easing: Easing.out(Easing.exp) }));
     	// translateX.value = withDelay(ANIMATION_DELAY, withTiming(0, { duration: ANIMATION_DURATION, easing: Easing.out(Easing.exp) }));
     }, []);
@@ -74,8 +80,8 @@ const Online = () => {
     });
   
     useEffect(() => {
-      opacity.value = withTiming(1, { duration: INTRO_ANIMATION_DURATION, easing: Easing.out(Easing.exp) });
-    	translateX.value = withTiming(0, { duration: INTRO_ANIMATION_DURATION, easing: Easing.out(Easing.exp) });
+      opacity.value = withTiming(1, { duration: INTRO_ANIMATION_DURATION, easing: Easing.inOut(Easing.exp) });
+    	translateX.value = withTiming(0, { duration: INTRO_ANIMATION_DURATION, easing: Easing.inOut(Easing.exp) });
       // opacity.value = withDelay(ANIMATION_DELAY, withTiming(1, { duration: ANIMATION_DURATION, easing: Easing.out(Easing.exp) }));
       // translateX.value = withDelay(ANIMATION_DELAY, withTiming(0, { duration: ANIMATION_DURATION, easing: Easing.out(Easing.exp) }));
     }, []);

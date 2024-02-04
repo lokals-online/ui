@@ -107,7 +107,7 @@ export const BoardView = () => {
 
             {/* OPPONENT INDICATOR LED! */}
             {(turn?.playerId === opponent.id) && 
-                <LokalTextBlink intervalInMs={3000} 
+                <LokalTextBlink intervalInMs={500} 
                     style={{
                         position: 'absolute', 
                         top: -dimensions.barWidth/3, 
@@ -123,7 +123,7 @@ export const BoardView = () => {
             }
             {/* CURRENT PLAYER INDICATOR LED! */}
             {(turn?.playerId === currentPlayer.id) && 
-                <LokalTextBlink intervalInMs={3000} 
+                <LokalTextBlink intervalInMs={500} 
                     style={{
                         position: 'absolute', 
                         bottom: -dimensions.barWidth/3, 

@@ -1,8 +1,9 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { LokalText } from "../../common/LokalCommons";
 import { LOKAL_COLORS } from "../../common/LokalConstants";
+import Animated from 'react-native-reanimated';
 
 export const ClosedCard = () => {
     return <View style={[cardStyle.card, {
@@ -53,13 +54,34 @@ export const CardComponent = ({style, number, type, disabled, onPress}: any) => 
 
 }
 
+export const CardAnimation = () => {
+
+    const numbers = [1,2,3,4,5,6,7,8,9,10,11,12,13,14];
+    const types = ['SPADES','CLUBS','HEARTS','DIAMONDS'];
+
+    const [numberIndex, setNumberIndex] = useState<number>();
+    const [typeIndex, setTypeIndex] = useState<number>();
+
+    useEffect(() => {
+        const int = setInterval(() => {
+            const ms = new Date().getMilliseconds();
+            const numberIndex = ms % 14;
+            const typeIndex = ms % 4;
+            setTypeIndex(typeIndex);
+            setNumberIndex(numberIndex);
+        }, 100);
+
+        return () => clearInterval(int);
+    });
+
+    return <CardComponent number={numbers[numberIndex]} type={types[typeIndex]} disabled={true} onPress={() => {}} />
+}
+
 const cardStyle = StyleSheet.create({
     card: {
         height: '100%',
         width: 'auto',
         aspectRatio: 1/1.5,
-        // borderWidth: 1,
-        // borderColor: 'red',
         backgroundColor: 'white',
     },
     cardNumber: {

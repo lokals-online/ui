@@ -21,7 +21,6 @@ export const LokalApp = () => {
         prefixes: [prefix],
         config: {
             screens: {
-                intro: 'intro',
                 lokal: 'lokal',
                 // kayit: 'kayit',
                 tavla: 'tavla/:sessionId?',
