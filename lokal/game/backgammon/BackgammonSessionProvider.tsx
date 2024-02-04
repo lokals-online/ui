@@ -4,6 +4,7 @@ import { backgammonApi } from "../../chirak/chirakApi/game/backgammonApi";
 import { LokalFetchingState } from "../../common/LokalCommons";
 import { usePlayer } from "../../player/CurrentPlayer";
 import { BackgammonSession, BackgammonSettings } from "./backgammonUtil";
+import { View } from "react-native";
 
 const BACKGAMMON_SESSION_STATE = {
     INITIAL: "INITIAL",
@@ -116,7 +117,9 @@ const BackgammonSessionProvider = ({sessionId, children}: any) => {
     } as BackgammonSessionContext;
 
     if (sessionId && !backgammonSession?.id) {
-        return <LokalFetchingState />
+        return <View style={{display: 'flex', width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center'}}>
+            <LokalFetchingState />
+        </View>
     }
     else return <BackgammonSessionContext.Provider value={value}>
         {children}

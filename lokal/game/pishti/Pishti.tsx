@@ -146,7 +146,7 @@ const PishtiComponent = () => {
     else return (
         <View style={style.pishti}>
             {newRound && 
-                // <View style={[style.stack]}>
+                <View style={[style.stack]}>
                     <View style={{height: '50%', aspectRatio: 1/1, overflow: 'hidden'}}>
                         <Animated.View  style={{
                             top: 0,
@@ -159,7 +159,7 @@ const PishtiComponent = () => {
                             <CardAnimation />
                         </Animated.View>
                 </View>
-                // </View>
+                </View>
             }
             {!newRound && <>
         

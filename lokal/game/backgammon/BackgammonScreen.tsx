@@ -22,7 +22,7 @@ export const BackgammonScreen = ({route}: any) => {
     const sessionId = route?.params?.sessionId;
 
     return <View style={[style.lokal, {height: (DEVICE_DIMENSIONS.height-headerHeight)}]}>
-        <GestureHandlerRootView>
+        <GestureHandlerRootView style={{height: '100%'}}>
             <BackgammonSessionProvider sessionId={sessionId}>
                 <BackgammonProvider>
                     <View style={[style.yazihane, {height: lokalHeight/4}]}>

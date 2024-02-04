@@ -5,6 +5,7 @@ import { LokalFetchingState } from "../../common/LokalCommons";
 import { usePlayer } from "../../player/CurrentPlayer";
 import { CHIRAK_PLAYER } from "../../player/Player";
 import { PishtiPlayer, PishtiSession, PishtiSettings } from "./pishtiUtil";
+import { View } from "react-native";
 
 export interface PishtiSessionContext {
     session: PishtiSession;
@@ -109,7 +110,9 @@ export const PishtiSessionProvider = ({sessionId, children}: any) => {
     } as PishtiSessionContext;
 
     if (sessionId && !pishtiSession?.id) {
-        return <LokalFetchingState />
+        return <View style={{display: 'flex', width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center'}}>
+            <LokalFetchingState />
+        </View>
     }
     else return <PishtiSessionContext.Provider value={value}>
         {children}

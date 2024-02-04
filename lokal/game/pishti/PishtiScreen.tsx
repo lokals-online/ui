@@ -23,7 +23,7 @@ export const Pishti2Screen = ({route, navigation}: any) => {
     const sessionId = route?.params?.sessionId;
 
     return <View style={[style.lokal, {height: (DEVICE_DIMENSIONS.height-headerHeight)}]}>
-        <GestureHandlerRootView>
+        <GestureHandlerRootView style={{height: '100%'}}>
             <PishtiSessionProvider sessionId={sessionId}>
                 <PishtiProvider>
                     <View style={[style.yazihane, {height: lokalHeight/4}]}>

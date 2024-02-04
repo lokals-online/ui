@@ -87,7 +87,12 @@ export default LokalScreen;
 export const style = StyleSheet.create({
     lokal: {
         display: 'flex',
-        flexDirection: 'column'
+        flexDirection: 'column',
+        flex: 1,
+        height: '100%'
+        // justifyContent: 'center',
+        // alignContent: 'center',
+        // alignItems: 'center',
     },
     yazihane: {
         display: 'flex',
